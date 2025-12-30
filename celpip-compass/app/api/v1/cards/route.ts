@@ -8,63 +8,10 @@ import {
   PaginatedResponse,
   Flashcard
 } from '@/types/flashcards';
+import { DataService } from '@/services/data-service';
 
 // 模拟数据库查询（实际项目中会连接真实数据库）
-let mockFlashcards: Flashcard[] = [
-  {
-    id: '1',
-    type: CardType.WRITING_TASK1,
-    title: '向邻居投诉噪音问题',
-    scenario: '邻居在夜间产生过多噪音，影响休息',
-    tone: 'semi-formal',
-    difficulty: DifficultyLevel.CLB8,
-    status: CardStatus.LEARNING,
-    essentialPhrases: {
-      opening: [
-        'I hope this message finds you well.',
-        'I\'m writing to discuss a matter that\'s been concerning me.',
-        'I would appreciate it if we could address this issue.'
-      ],
-      purpose: [
-        'The main reason for my message is to address the noise issue.',
-        'I wanted to bring to your attention the excessive noise during evenings.',
-        'My concern is about the disturbance this is causing.'
-      ],
-      details: [
-        'The noise typically starts around 10 PM and continues until midnight.',
-        'It\'s making it difficult for me to sleep and focus during work.',
-        'I\'ve noticed this has been happening for the past two weeks.'
-      ],
-      closing: [
-        'I would be grateful if we could find a solution to this matter.',
-        'Thank you for your understanding and cooperation.',
-        'I look forward to your response.'
-      ]
-    },
-    upgrades: {
-      vocabulary: {
-        'noisy': ['excessive', 'disturbing', 'intrusive'],
-        'problem': ['issue', 'concern', 'matter'],
-        'make': ['cause', 'result in', 'lead to']
-      },
-      structure: {
-        'I\'m worried about the noise.': 'I\'m deeply concerned about the excessive noise that has been occurring.',
-        'Can you stop it?': 'I would greatly appreciate it if you could take measures to reduce the noise levels.'
-      }
-    },
-    practice: {
-      question: 'Write an email to your neighbor about noise disturbance during evenings.',
-      keyPoints: ['specific times', 'impact on you', 'requested solution', 'polite tone']
-    },
-    reviewCount: 3,
-    correctCount: 2,
-    averageQualityScore: 4.2,
-    totalStudyTime: 450,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    isDeleted: false
-  }
-];
+const mockFlashcards: Flashcard[] = DataService.getAllCards();
 
 // 查询参数Schema
 const QuerySchema = z.object({
