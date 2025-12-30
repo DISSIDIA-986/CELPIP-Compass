@@ -240,9 +240,8 @@ CELPIP Compass 是一个智能化、个性化的CELPIP考试备考平台，通�
 - **前端:** Next.js 14 + React 18 + TypeScript
 - **后端:** Node.js + Express + TypeScript
 - **数据库:**
-  - PostgreSQL（用户数据、学习计划）
+  - PostgreSQL（所有数据，包括用户、学习计划、社区、笔记）
   - Redis（缓存、会话）
-  - MongoDB（用户内容、社区）
 - **部署:** Docker + Kubernetes（云平台）
 
 ### 关键技术特性

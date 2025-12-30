@@ -27,9 +27,8 @@ CELPIP Compass is a comprehensive learning platform for CELPIP (Canadian English
 - **Real-time**: WebSocket notifications
 
 ### Database
-- **Primary**: PostgreSQL 14+ (users, learning plans, progress)
+- **Primary**: PostgreSQL 14+ (all data including users, learning plans, progress, notes, events)
 - **Cache**: Redis 7+ (sessions, caching, rate limiting)
-- **Document**: MongoDB 5+ (user notes, unstructured content)
 
 ## Development Workflow
 
@@ -210,10 +209,11 @@ GET    /api/v1/resources/:id
 - Rate limiting counters
 - Leaderboard data
 
-### MongoDB
-- User notes and annotations
-- Flexible content storage
-- File attachments
+### PostgreSQL Features
+- JSONB support for flexible data structures
+- Full-text search capabilities
+- Materialized views for analytics
+- Time series data support with partitioning
 
 ## Development Guidelines
 
