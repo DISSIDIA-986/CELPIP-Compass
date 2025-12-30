@@ -67,6 +67,8 @@ export const SampleCard: React.FC<SampleCardProps> = ({
         return 'bg-blue-50 text-blue-700';
       case 'informal':
         return 'bg-green-50 text-green-700';
+      case 'neutral':
+        return 'bg-gray-50 text-gray-700';
       default:
         return 'bg-gray-50 text-gray-700';
     }
@@ -94,11 +96,14 @@ export const SampleCard: React.FC<SampleCardProps> = ({
           </span>
         </div>
         <div className="flex flex-col gap-1 ml-2">
-          <span className={`px-2 py-1 text-xs rounded-full ${getToneColor(card.tone)}`}>
-            {card.tone === 'formal' && '正式'}
-            {card.tone === 'semi-formal' && '半正式'}
-            {card.tone === 'informal' && '非正式'}
-          </span>
+          {card.tone && (
+            <span className={`px-2 py-1 text-xs rounded-full ${getToneColor(card.tone)}`}>
+              {card.tone === 'formal' && '正式'}
+              {card.tone === 'semi-formal' && '半正式'}
+              {card.tone === 'informal' && '非正式'}
+              {card.tone === 'neutral' && '中性'}
+            </span>
+          )}
           <span className="text-xs text-gray-500">
             {getDifficultyLabel(card.difficulty)}
           </span>

@@ -12,10 +12,10 @@ let mockFlashcards: any[] = [
     difficulty: 'clb8',
     status: CardStatus.LEARNING,
     essentialPhrases: {
-      opening: ['I hope this message finds you well.', ...],
-      purpose: ['The main reason for my message is...', ...],
-      details: ['The noise typically starts around...', ...],
-      closing: ['I would be grateful if we could...', ...]
+      opening: ['I hope this message finds you well.', 'I\'m writing to discuss a matter that\'s been concerning me.', 'I would appreciate it if we could address this issue.'],
+      purpose: ['The main reason for my message is to address the noise issue.', 'I wanted to bring to your attention the excessive noise during evenings.', 'My concern is about the disturbance this is causing.'],
+      details: ['The noise typically starts around 10 PM and continues until midnight.', 'It\'s making it difficult for me to sleep and focus during work.', 'I\'ve noticed this has been happening for the past two weeks.'],
+      closing: ['I would be grateful if we could find a solution to this matter.', 'Thank you for your understanding and cooperation.', 'I look forward to your response.']
     },
     upgrades: {
       vocabulary: {
@@ -23,8 +23,8 @@ let mockFlashcards: any[] = [
       }
     },
     practice: {
-      question: 'Write an email to your neighbor about noise disturbance...',
-      keyPoints: ['specific times', 'impact on you', ...]
+      question: 'Write an email to your neighbor about noise disturbance during evenings.',
+      keyPoints: ['specific times', 'impact on you', 'requested solution', 'polite tone']
     },
     reviewCount: 3,
     correctCount: 2,

@@ -87,19 +87,19 @@ export const SampleCardsGrid: React.FC<SampleCardsGridProps> = ({
           </div>
           <div className="bg-green-50 p-3 rounded-lg">
             <div className="text-2xl font-bold text-green-600">
-              {cards.filter(c => c.status === 'mastered').length}
+              {cards.filter(c => c.status === CardStatus.MASTERED).length}
             </div>
             <div className="text-sm text-green-600">已掌握</div>
           </div>
           <div className="bg-yellow-50 p-3 rounded-lg">
             <div className="text-2xl font-bold text-yellow-600">
-              {cards.filter(c => c.status === 'learning').length}
+              {cards.filter(c => c.status === CardStatus.LEARNING).length}
             </div>
             <div className="text-sm text-yellow-600">学习中</div>
           </div>
           <div className="bg-purple-50 p-3 rounded-lg">
             <div className="text-2xl font-bold text-purple-600">
-              {cards.filter(c => c.status === 'new').length}
+              {cards.filter(c => c.status === CardStatus.NEW).length}
             </div>
             <div className="text-sm text-purple-600">新卡片</div>
           </div>

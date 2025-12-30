@@ -136,6 +136,7 @@ export const sampleFlashcards: Flashcard[] = [
     type: CardType.WRITING_TASK2,
     title: '远程工作的优势',
     scenario: '讨论远程工作对员工和雇主的积极影响',
+    tone: 'neutral',
     difficulty: DifficultyLevel.CLB8,
     status: CardStatus.NEW,
     essentialPhrases: {
@@ -204,6 +205,7 @@ export const sampleFlashcards: Flashcard[] = [
     type: CardType.WRITING_TASK2,
     title: '保护环境的重要性',
     scenario: '论述环境保护对可持续发展的重要性',
+    tone: 'neutral',
     difficulty: DifficultyLevel.CLB9,
     status: CardStatus.NEW,
     essentialPhrases: {
@@ -273,6 +275,7 @@ export const sampleFlashcards: Flashcard[] = [
     type: CardType.SPEAKING_TASK,
     title: '描述一次难忘的旅行经历',
     scenario: 'Speaking Task 5 - 描述个人经历',
+    tone: 'informal',
     difficulty: DifficultyLevel.CLB7,
     status: CardStatus.NEW,
     essentialPhrases: {
@@ -336,6 +339,7 @@ export const sampleFlashcards: Flashcard[] = [
     type: CardType.SPEAKING_TASK,
     title: '讨论科技对日常生活的影响',
     scenario: 'Speaking Task 3 - 讨论观点',
+    tone: 'neutral',
     difficulty: DifficultyLevel.CLB8,
     status: CardStatus.NEW,
     essentialPhrases: {
@@ -400,6 +404,7 @@ export const sampleFlashcards: Flashcard[] = [
     type: CardType.LISTENING_KEYWORD,
     title: '购物场景关键词',
     scenario: '听力对话中购物相关的关键词和表达',
+    tone: 'neutral',
     difficulty: DifficultyLevel.CLB7,
     status: CardStatus.NEW,
     essentialPhrases: {
@@ -467,6 +472,7 @@ export const sampleFlashcards: Flashcard[] = [
     type: CardType.LISTENING_KEYWORD,
     title: '工作面试关键词',
     scenario: '听力对话中工作面试相关的关键词和表达',
+    tone: 'neutral',
     difficulty: DifficultyLevel.CLB9,
     status: CardStatus.NEW,
     essentialPhrases: {
