@@ -1,0 +1,551 @@
+{
+  "metadata": {
+    "title": "CELPIP Learning Resources Database",
+    "version": "1.0",
+    "lastUpdated": "2025-12-29",
+    "targetAudience": "CLB 7-9 learners",
+    "description": "Comprehensive video and blog resource collection for app integration"
+  },
+  
+  "youtubeChannels": [
+    {
+      "id": "hzad_education",
+      "name": "HZad Education",
+      "url": "https://youtube.com/@HZadEducation",
+      "subscribers": "500K+",
+      "rating": 5,
+      "advantages": [
+        "1000+ CELPIP-specific videos",
+        "Official learning pathways",
+        "Free AI mock tests",
+        "Active community with success stories",
+        "Certified instructors"
+      ],
+      "tier": "Tier 1 - Must Use",
+      "recommendedVideos": [
+        {
+          "title": "CELPIP A-Z Complete Guide",
+          "youtubeId": "xvLNML-oucs",
+          "duration": "45 min",
+          "purpose": "Overall overview",
+          "difficulty": "Beginner-friendly"
+        },
+        {
+          "title": "90-Minute Complete Crash Course",
+          "youtubeId": "tUDj0ZYZEw8",
+          "duration": "90 min",
+          "purpose": "Comprehensive learning",
+          "difficulty": "Intermediate"
+        },
+        {
+          "title": "Writing Complete Guide",
+          "youtubeId": "tVvuCUuAZwc",
+          "duration": "60 min",
+          "purpose": "Writing strategies",
+          "difficulty": "Intermediate"
+        },
+        {
+          "title": "Listening Complete Guide",
+          "youtubeId": "s0ssTBsRkuY",
+          "duration": "50 min",
+          "purpose": "Listening strategies",
+          "difficulty": "Intermediate"
+        },
+        {
+          "title": "Reading A-Z Guide",
+          "youtubeId": "IgvkjUMDNbI",
+          "duration": "60 min",
+          "purpose": "Reading techniques",
+          "difficulty": "Intermediate"
+        },
+        {
+          "title": "Complete Speaking Guide - All Parts",
+          "youtubeId": "gUDHZj5drb8",
+          "duration": "50 min",
+          "purpose": "Speaking framework",
+          "difficulty": "Intermediate"
+        },
+        {
+          "title": "Speaking Templates Full Set",
+          "youtubeId": "w3TMrQ5z-TA",
+          "duration": "40 min",
+          "purpose": "Speaking templates",
+          "difficulty": "Beginner-friendly"
+        },
+        {
+          "title": "400 Best CELPIP Words",
+          "youtubeId": "h5u-sSIfawI",
+          "duration": "45 min",
+          "purpose": "Vocabulary building",
+          "difficulty": "Beginner-friendly"
+        },
+        {
+          "title": "15-Minute Crash Course",
+          "youtubeId": "LyaXmNPqax4",
+          "duration": "15 min",
+          "purpose": "Quick introduction",
+          "difficulty": "Beginner-friendly"
+        },
+        {
+          "title": "Time Management Strategies Live",
+          "youtubeId": "GzFhPHbiYog",
+          "duration": "60 min",
+          "purpose": "Practical test strategies",
+          "difficulty": "Intermediate"
+        },
+        {
+          "title": "How to Guarantee a CELPIP 9+ in 2024/2025",
+          "youtubeId": "3vZ9dNoM5Ho",
+          "duration": "50 min",
+          "purpose": "High score techniques",
+          "difficulty": "Advanced"
+        },
+        {
+          "title": "The Best 2025 CELPIP Exam's Tips in 40 Minutes",
+          "youtubeId": "ddedplCGDrQ",
+          "duration": "40 min",
+          "purpose": "Comprehensive review",
+          "difficulty": "Intermediate"
+        }
+      ],
+      "playlists": [
+        "CELPIP Reading Playlist",
+        "CELPIP Speaking Playlist",
+        "CELPIP Writing Playlist",
+        "CELPIP Listening Playlist",
+        "CELPIP Vocabulary Playlist"
+      ]
+    },
+    {
+      "id": "mad_english_tv",
+      "name": "Mad English TV",
+      "url": "https://youtube.com/@madenglishTV",
+      "subscribers": "300K+",
+      "rating": 5,
+      "advantages": [
+        "Deep task-specific analysis",
+        "Real sample scoring explanations",
+        "Creative teaching style",
+        "Highly interactive community",
+        "Canadian perspective"
+      ],
+      "tier": "Tier 1 - High Quality",
+      "recommendedVideos": [
+        {
+          "title": "CELPIP Speaking Review - Task 1",
+          "youtubeId": "72U3oSEb6P4",
+          "duration": "14 min",
+          "purpose": "Task 1 detailed analysis",
+          "difficulty": "Intermediate"
+        },
+        {
+          "title": "CELPIP Writing Review - Task 1 - Will it get a score of 10",
+          "youtubeId": "OLxW34MY3mo",
+          "duration": "42 min",
+          "purpose": "Writing deep dive",
+          "difficulty": "Advanced"
+        }
+      ]
+    },
+    {
+      "id": "celpip_official",
+      "name": "CELPIP Official Channel",
+      "url": "https://youtube.com/@CELPIPofficial",
+      "rating": 4,
+      "advantages": [
+        "Official authority",
+        "Latest exam information",
+        "Free webinar recordings"
+      ],
+      "tier": "Tier 2 - Official",
+      "keyFeatures": [
+        "CELPIP Speaking Pro (Live classes)",
+        "Free Online Webinars (Monthly)",
+        "Official Test Information"
+      ]
+    },
+    {
+      "id": "fast_track_esl",
+      "name": "Fast Track ESL",
+      "rating": 4,
+      "advantages": [
+        "Clear pronunciation",
+        "Practical templates",
+        "Highly recommended"
+      ],
+      "tier": "Tier 2 - Supplementary"
+    },
+    {
+      "id": "rachel_english",
+      "name": "Rachel's English",
+      "rating": 4,
+      "advantages": [
+        "General English fluency",
+        "Pronunciation & stress patterns",
+        "Idioms and natural expressions"
+      ],
+      "tier": "Tier 2 - Supplementary",
+      "purpose": "Supporting channel for fluency"
+    }
+  ],
+
+  "blogs": [
+    {
+      "id": "hzad_blog",
+      "name": "HZad Education Blog",
+      "url": "https://hzadeducation.com/blog/",
+      "rating": 5,
+      "updateFrequency": "Weekly",
+      "advantages": [
+        "In-depth guides with templates",
+        "Success student stories",
+        "Latest tips and tricks"
+      ],
+      "sampleArticles": [
+        "CELPIP Study Guide: The Best Tips and Tricks",
+        "The 10 Best CELPIP Courses for the Highest Marks"
+      ]
+    },
+    {
+      "id": "ilac_blog",
+      "name": "ILAC Blog",
+      "url": "https://ilac.com/blog/",
+      "rating": 5,
+      "advantages": [
+        "Institutional credibility",
+        "Phase-based learning methods",
+        "Time planning suggestions"
+      ],
+      "recommendedArticles": [
+        {
+          "title": "CELPIP Writing Examples & Tips: Exam Prep",
+          "url": "https://ilac.com/blog/celpip-writing-tips/",
+          "topic": "Writing",
+          "depth": 5
+        },
+        {
+          "title": "Your Complete CELPIP Study Guide",
+          "url": "https://ilac.com/blog/your-complete-celpip-study-guide/",
+          "topic": "Comprehensive",
+          "depth": 5
+        }
+      ]
+    },
+    {
+      "id": "celpip_official_blog",
+      "name": "CELPIP Official - 'CELPIP in 5 Minutes a Day'",
+      "url": "https://celpip.ca/celpip-in-5-minutes-a-day-writing-tips/",
+      "rating": 5,
+      "advantages": [
+        "Official authority",
+        "Concise daily tips",
+        "Free webinar links"
+      ],
+      "sections": [
+        "Writing Tips",
+        "Speaking Tips",
+        "Listening Tips",
+        "Reading Tips"
+      ]
+    },
+    {
+      "id": "polidict_blog",
+      "name": "PoliDict CELPIP Study Guide",
+      "url": "https://polidict.com/en/blog/study-guide-celpip",
+      "rating": 4,
+      "advantages": [
+        "Structured teaching",
+        "Time management focus",
+        "Strategy-focused approach"
+      ]
+    },
+    {
+      "id": "e2language_blog",
+      "name": "E2Language CELPIP Writing Tips",
+      "url": "https://blog.e2language.com/top-tips-to-excel-in-celpip-writing/",
+      "rating": 4,
+      "advantages": [
+        "8 expert tips",
+        "Vocabulary variety explained",
+        "Word count requirements clear"
+      ],
+      "focusTopic": "Writing"
+    },
+    {
+      "id": "verbalhub_blog",
+      "name": "VerbalHub Complete CELPIP 2025 Guide",
+      "url": "https://www.verbalhub.com/what-is-celpip.php",
+      "rating": 4,
+      "advantages": [
+        "2025 latest information",
+        "Time management explained",
+        "Complete overview"
+      ]
+    },
+    {
+      "id": "keycourse_blog",
+      "name": "Key Course - Self-Learning Strategies",
+      "url": "https://keycourse.ca/blog/organize-self-learning-celpip-prep",
+      "rating": 4,
+      "advantages": [
+        "Self-study strategies",
+        "Goal-setting framework",
+        "Schedule recommendations"
+      ]
+    }
+  ],
+
+  "chineseResources": [
+    {
+      "id": "bilibili_gaier",
+      "platform": "Bilibili",
+      "name": "盖尔雅思 - CELPIP思培专区",
+      "rating": 5,
+      "advantages": [
+        "Chinese explanation",
+        "Real exam analysis",
+        "Official standards"
+      ],
+      "sampleVideos": [
+        "联讲CELPIP思培考点，官方真题解析，9分写作技巧",
+        "思培口语Task 5审题思路及考点归纳"
+      ]
+    },
+    {
+      "id": "bilibili_ye_teacher",
+      "platform": "Bilibili / Scribd",
+      "name": "叶老师 CELPIP思培系列",
+      "rating": 5,
+      "advantages": [
+        "Systematic approach",
+        "Clear frameworks",
+        "AI tool application"
+      ],
+      "keyResource": "思培口语八版讲义",
+      "methodology": [
+        "Recording → Text conversion → AI translation → Memorization",
+        "5-7-9 score framework explanation"
+      ]
+    },
+    {
+      "id": "bilibili_listening_series",
+      "platform": "Bilibili",
+      "name": "思培听力叶老师系列",
+      "courses": [
+        "思培听力40小时系列 (5分班)",
+        "思培听力40小时系列 (7分班)",
+        "思培听力40小时系列 (9分班)"
+      ],
+      "rating": 4
+    }
+  ],
+
+  "officialResources": [
+    {
+      "id": "celpip_official_free_resources",
+      "name": "CELPIP Official - Free Resources",
+      "url": "https://celpip.ca/prepare-for-celpip/free-resources/",
+      "rating": 5,
+      "includes": [
+        "Free sample questions",
+        "Online Practice Tests",
+        "CELPIP Speaking Pro (live)",
+        "CELPIP Writing Pro (live)",
+        "Free Webinars (monthly)",
+        "Official Guidebooks"
+      ]
+    },
+    {
+      "id": "ircc_clb_standards",
+      "name": "IRCC - CLB Standards Descriptors",
+      "url": "https://ircc.gc.ca",
+      "purpose": "Understand scoring criteria",
+      "rating": 5
+    },
+    {
+      "id": "canada_crs_table",
+      "name": "Canada.ca - Express Entry CRS Points Table",
+      "url": "https://canada.ca",
+      "purpose": "Understand score value for PR",
+      "rating": 4
+    }
+  ],
+
+  "resourcesBySkill": {
+    "writing": {
+      "youtubeVideos": [
+        "HZad Writing Complete Guide (60 min)",
+        "HZad Writing Templates Series",
+        "Mad English TV Writing Task Review"
+      ],
+      "blogs": [
+        "ILAC: CELPIP Writing Examples & Tips",
+        "E2Language: 8 Writing Tips",
+        "HZad Blog: Writing Strategy Articles"
+      ],
+      "difficulty": 3,
+      "priority": "HIGHEST (Best ROI)"
+    },
+    "speaking": {
+      "youtubeVideos": [
+        "HZad Speaking Complete Guide (50 min)",
+        "HZad Speaking Templates (40 min)",
+        "Mad English TV Task 1 Review"
+      ],
+      "chineseResources": [
+        "叶老师口语八版讲义",
+        "盖尔雅思口语考点分析"
+      ],
+      "difficulty": 3,
+      "priority": "HIGH (Leverage Toastmasters advantage)"
+    },
+    "listening": {
+      "youtubeVideos": [
+        "HZad Listening Complete Guide (50 min)",
+        "CELPIP Live! Time Management",
+        "HZad Listening Part-specific videos"
+      ],
+      "chineseResources": [
+        "叶老师思培听力40小时系列"
+      ],
+      "difficulty": 4,
+      "priority": "MEDIUM"
+    },
+    "reading": {
+      "youtubeVideos": [
+        "HZad Reading A-Z Guide (60 min)",
+        "HZad Reading Part-specific videos"
+      ],
+      "blogs": [
+        "VerbalHub: Time Management Explained"
+      ],
+      "difficulty": 3,
+      "priority": "MEDIUM"
+    },
+    "vocabulary": {
+      "youtubeVideos": [
+        "HZad 400 Best CELPIP Words (45 min)",
+        "HZad Vocabulary Playlist"
+      ],
+      "tools": [
+        "Quizlet (for spaced repetition)",
+        "Merriam-Webster Dictionary"
+      ],
+      "priority": "ONGOING"
+    }
+  },
+
+  "studyPathRecommendations": {
+    "phase1_weeks1to2": {
+      "name": "Foundation & Planning",
+      "youtubeVideos": [
+        {
+          "video": "HZad 15-Minute Crash Course",
+          "purpose": "Quick overview"
+        },
+        {
+          "video": "HZad A-Z Complete Guide",
+          "purpose": "Detailed understanding"
+        }
+      ],
+      "blogs": [
+        {
+          "article": "ILAC: Complete Study Guide",
+          "purpose": "Create study plan"
+        },
+        {
+          "article": "CELPIP: 5 Minutes A Day Series",
+          "purpose": "Daily tips"
+        }
+      ],
+      "estimatedHours": "3-4 hours"
+    },
+    "phase2_weeks3to6": {
+      "name": "Skill-Specific Deep Dives",
+      "writing": "HZad 60-min + Mad English TV evaluation + Blog tips",
+      "speaking": "HZad 50-min + 叶老师讲义 (Chinese) + Task-specific videos",
+      "listening": "HZad 50-min + Part-specific videos",
+      "reading": "HZad 60-min + Blog tips",
+      "estimatedHours": "10-15 hours"
+    },
+    "phase3_weeks7to8": {
+      "name": "Final Sprint & Review",
+      "youtubeVideos": [
+        "HZad 40-Minute Complete Review",
+        "Task-specific reviews for weak areas"
+      ],
+      "blogs": [
+        "Common mistakes to avoid"
+      ],
+      "estimatedHours": "3-5 hours"
+    }
+  },
+
+  "appIntegrationSuggestions": {
+    "structure": [
+      {
+        "level": 1,
+        "section": "Official Resources",
+        "items": [
+          "CELPIP Official Sample Questions",
+          "CLB Descriptors",
+          "CRS Points Table"
+        ]
+      },
+      {
+        "level": 2,
+        "section": "YouTube Video Library",
+        "organization": "By skill (Writing/Speaking/Listening/Reading)",
+        "primaryChannel": "HZad Education",
+        "supplementary": ["Mad English TV", "Rachel's English"]
+      },
+      {
+        "level": 3,
+        "section": "Blog Articles Library",
+        "organization": "By skill and topic",
+        "primarySources": ["HZad Blog", "ILAC", "CELPIP Official"]
+      },
+      {
+        "level": 4,
+        "section": "Chinese Resources",
+        "items": ["叶老师讲义", "B站视频资源"]
+      },
+      {
+        "level": 5,
+        "section": "Learning Path Guides",
+        "items": ["Week 1-2 Plan", "Week 3-6 Plan", "Week 7-8 Sprint"]
+      }
+    ],
+    "features": [
+      "Video progress tracking",
+      "Bookmark articles",
+      "Create learning schedule",
+      "Practice test links",
+      "Vocabulary flashcards",
+      "Note-taking integration"
+    ]
+  },
+
+  "qualityMetrics": {
+    "credibility": {
+      "5": "Official or certified instructors",
+      "4": "Reputable educational institutions",
+      "3": "Experienced creators"
+    },
+    "practicality": {
+      "5": "Directly applicable to exam",
+      "4": "Includes templates/frameworks",
+      "3": "Theory-focused"
+    },
+    "completeness": {
+      "5": "Covers all skills/parts",
+      "4": "Covers most content",
+      "3": "Skill/part specific"
+    },
+    "accessibility": {
+      "5": "Free, easy to find",
+      "4": "Partially free",
+      "3": "Requires payment"
+    }
+  }
+}
