@@ -4,314 +4,346 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-CELPIP Compass is a comprehensive learning platform for CELPIP (Canadian English Language Proficiency Index Program) test preparation. Currently, this repository contains detailed technical documentation and is ready for implementation.
+CELPIP Compass is a spaced repetition learning system for CELPIP (Canadian English Language Proficiency Index Program) test preparation. It implements the SM2 (SuperMemo 2) algorithm to optimize learning intervals. The project is a Next.js 16 application with TypeScript, using Prisma as the ORM and PostgreSQL as the database.
 
-**Status**: Documentation phase - Ready for development
-**Target Platform**: Web application with mobile responsiveness
-**Architecture**: Microservices with Next.js frontend and Node.js/Express backend
+**Status**: Production-ready with development optimizations
+**Architecture**: Full-stack Next.js with App Router, using TypeScript strict mode
 
 ## Technology Stack
 
 ### Frontend
-- **Framework**: Next.js 14 + React 18
-- **Styling**: Tailwind CSS
-- **State Management**: Zustand
-- **Routing**: Next.js App Router
-- **Network**: Axios/TanStack Query
-- **Testing**: Jest + Playwright
+- **Framework**: Next.js 16.1.1 (App Router) + React 19.2.3
+- **Styling**: Tailwind CSS 4 with PostCSS
+- **State Management**: React hooks (Zustand available but not heavily used)
+- **Type Safety**: TypeScript 5 with strict mode
+- **Validation**: Zod 4.2.1 for API validation
 
 ### Backend
-- **Runtime**: Node.js + Express (or Python + FastAPI)
-- **Authentication**: JWT tokens (15min expiry) + Refresh tokens (7 days)
-- **API Design**: REST API with optional GraphQL
-- **Real-time**: WebSocket notifications
+- **API Layer**: Next.js API routes (RESTful design)
+- **Database ORM**: Prisma 7.2.0 (configured but using mock for development)
+- **Database**: PostgreSQL 15 (via Docker)
+- **Authentication**: JWT tokens (15min access + 7day refresh)
+- **Password Hashing**: bcryptjs
 
-### Database
-- **Primary**: PostgreSQL 14+ (all data including users, learning plans, progress, notes, events)
-- **Cache**: Redis 7+ (sessions, caching, rate limiting)
+### Development Tools
+- **Testing**: Jest 30.2.0 (unit), Playwright 1.57.0 (E2E)
+- **Linting**: ESLint 9 with Next.js configuration
+- **Build**: Next.js with Turbopack (dev) and Webpack (production)
+- **Bundle Analysis**: @next/bundle-analyzer
 
-## Development Workflow
+## Development Commands
 
-### Initial Setup
+### Development
 ```bash
-# Clone and install
-git clone <repository-url>
-cd celpip-compass
-
-# Backend setup
-cd backend
-npm install
-cp .env.example .env
-# Edit .env with proper configurations
-
-# Frontend setup
-cd ../frontend
-npm install
-cp .env.example .env.local
-
-# Start databases with Docker
-cd ..
-docker-compose up -d
-
-# Run database migrations
-cd backend
-npm run db:migrate
-npm run db:seed
+npm run dev              # Start development server (http://localhost:3000)
+npm run dev -- --port 3001  # Start on specific port if 3000 is occupied
 ```
 
-### Development Commands
+### Building
 ```bash
-# Backend (port 3001)
-cd backend
-npm run dev        # Development server
-npm run build      # Production build
-npm test          # Run tests
-npm run test:watch # Watch mode
-npm run lint      # Code linting
-
-# Frontend (port 3000)
-cd frontend
-npm run dev        # Development server
-npm run build      # Production build
-npm run export     # Static export
-npm run test:e2e   # E2E tests with Playwright
-npm run lighthouse # Performance audit
-
-# Database operations
-cd backend
-npm run db:migrate # Run migrations
-npm run db:seed   # Seed initial data
-npm run db:reset  # Reset database
+npm run build            # Production build (webpack)
+npm run start            # Start production server
+npm run analyze          # Analyze bundle with Bundle Analyzer
 ```
 
-### Docker Commands
+### Code Quality
 ```bash
-# Start all services
-docker-compose up -d
+npm run lint             # Run ESLint
+npx tsc --noEmit         # Type check without building
+npm run lint -- --fix    # Auto-fix ESLint issues
+```
 
-# View logs
-docker-compose logs -f
+### Testing
+```bash
+npm test                 # Run Jest unit tests
+npm run test:watch       # Jest in watch mode
+npm run test:coverage    # Generate coverage report
+npm run test:e2e         # Run Playwright E2E tests
+npm run test:e2e -- --headed  # Run E2E tests with visible browser
+```
 
-# Stop all services
-docker-compose down
-
-# Rebuild and start
-docker-compose down && docker-compose up -d --build
+### Database (for when implemented)
+```bash
+docker-compose up -d    # Start PostgreSQL container
+npx prisma migrate deploy  # Run migrations
+npx prisma db seed      # Seed database
 ```
 
 ## Architecture Overview
 
-### Directory Structure (Planned)
+### Directory Structure
 ```
 celpip-compass/
-├── frontend/           # Next.js React app
-│   ├── src/
-│   │   ├── components/  # Reusable UI components
-│   │   ├── pages/      # Page components (Next.js routing)
-│   │   ├── styles/     # Global styles + Tailwind
-│   │   ├── hooks/      # Custom React hooks
-│   │   ├── store/      # Zustand state management
-│   │   ├── services/   # API services
-│   │   └── utils/      # Utility functions
-├── backend/            # Node.js/Express API
-│   ├── src/
-│   │   ├── routes/     # API routes
-│   │   ├── controllers/ # Business logic
-│   │   ├── services/   # Service layer
-│   │   ├── middleware/  # Express middleware
-│   │   ├── models/     # Data models
-│   │   └── utils/      # Utility functions
-└── database/          # Database schemas and migrations
+├── app/                     # Next.js App Router (primary code)
+│   ├── api/v1/             # API routes
+│   │   ├── auth/          # Authentication endpoints
+│   │   ├── cards/         # Flashcard management
+│   │   └── data/          # Sample data endpoints
+│   ├── components/        # React components
+│   ├── hooks/             # Custom React hooks
+│   ├── lib/               # Utility libraries
+│   ├── middleware/        # Next.js middleware
+│   ├── services/          # Business logic
+│   ├── types/             # TypeScript definitions
+│   └── utils/             # Utility functions
+├── components/            # Additional components (some duplication)
+├── tests/                 # Test suites (unit + e2e)
+└── prisma/                # Database schema and migrations
 ```
 
-### Core Services
-1. **Authentication Service**: OAuth2 (Google/WeChat), JWT management
-2. **Learning Service**: Study plans, progress tracking, recommendations
-3. **Resource Service**: Video/blog repository with search and filtering
-4. **Community Service**: Forums, success stories, Q&A
-5. **Analytics Service**: User behavior tracking and reporting
+### Key Architectural Patterns
 
-### API Endpoints (Key)
+#### API Design
+- **RESTful API** under `/api/v1/` with standardized `ApiResponse<T>` wrapper
+- **Modular route structure** with separate directories for each domain
+- **JWT-based authentication** with HttpOnly refresh token cookies
+- **Zod validation** for all API inputs
+- **Error handling** with proper HTTP status codes and error responses
+
+#### Security Architecture
+- **Security headers** configured in `middleware.ts` (CSP, XSS, HSTS)
+- **Rate limiting** (100 requests/15min for auth endpoints)
+- **CORS configuration** for cross-origin requests
+- **Input validation** and sanitization on all endpoints
+
+#### Data Layer
+- **Prisma ORM** with PostgreSQL schema
+- **Mock implementation** currently in use for development (`lib/database.ts`)
+- **SM-2 Algorithm** implementation in `services/spaced-repetition-service.ts`
+- **Repository pattern** for data access abstraction
+
+#### Frontend Architecture
+- **Client-side rendering** with Next.js App Router
+- **Lazy loading** for heavy components (`StudyDashboard`, `StudyProgress`, `SampleCardsGrid`)
+- **Component composition** with proper TypeScript interfaces
+- **Custom hooks** for state management (e.g., `useAuth`)
+
+### Component Architecture
+
+#### Core Components
+- **StudyDashboard**: Main learning interface with session management
+- **StudyProgress**: Analytics and statistics display
+- **SampleCard**: Individual flashcard display component
+- **SampleCardsGrid**: Browse and filter flashcards interface
+
+#### Component Patterns
+- All components use TypeScript interfaces for props
+- Lazy loading with `React.lazy()` and `Suspense`
+- Memoization with `React.memo()` for performance-critical components
+- Responsive design with Tailwind CSS breakpoints
+
+### Service Layer
+
+#### Business Logic Services
+- **SpacedRepetitionService**: SM-2 algorithm implementation
+  - Calculates optimal review intervals
+  - Manages card status transitions
+  - Tracks learning statistics
+- **DataService**: Data access layer abstraction
+  - Provides CRUD operations for flashcards
+  - Handles sample data generation
+  - Manages user preferences
+
+### State Management
+- **Local component state** for UI interactions
+- **Custom hooks** for complex state (e.g., `useAuth`)
+- **Zustand** available for global state (not heavily used currently)
+
+## Database Schema
+
+### Core Models (Prisma Schema)
+```prisma
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      Role     @default(USER)
+  isActive  Boolean  @default(true)
+  preferences UserPreferences?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Card {
+  id          String           @id @default(cuid())
+  type        CardType
+  question    String
+  answer      String
+  explanation String?
+  tags        String[]
+  difficulty  DifficultyLevel
+  status      CardStatus       @default(NEW)
+  reviewCount Int              @default(0)
+  correctCount Int             @default(0)
+  nextReviewDate DateTime?
+  metadata    Json?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model Review {
+  id           String   @id @default(cuid())
+  cardId       String
+  quality      Int      // 0-5 rating
+  interval     Int      // Days until next review
+  repetitions  Int
+  easeFactor   Float    // SM2 ease factor
+  reviewAt     DateTime @default(now())
+}
+```
+
+### Key Enums
 ```typescript
-// Authentication
-POST   /api/v1/auth/register
-POST   /api/v1/auth/login
-POST   /api/v1/auth/refresh
-
-// Learning
-GET    /api/v1/learning-plans
-POST   /api/v1/learning-plans
-POST   /api/v1/progress
-
-// Resources
-GET    /api/v1/resources
-GET    /api/v1/resources/search
-GET    /api/v1/resources/:id
+enum CardType { WRITING, SPEAKING, LISTENING, READING, GRAMMAR, VOCABULARY }
+enum DifficultyLevel { BEGINNER, INTERMEDIATE, ADVANCED }
+enum CardStatus { NEW, LEARNING, REVIEW, MASTERED }
+enum Role { USER, ADMIN }
 ```
 
-## Responsive Design Implementation
+## SM2 Algorithm Implementation
 
-### Breakpoints
-- **XS**: 0-480px (iPhone SE)
-- **SM**: 481-768px (iPhone 12)
-- **MD**: 769-1024px (iPad)
-- **LG**: 1025-1440px (MacBook Air)
-- **XL**: 1441px+ (4K display)
+### Core Concepts
+- **Quality Score (0-5)**: User's self-assessment of recall quality
+- **Ease Factor**: How easy the card is (1.3-2.5+ range)
+- **Interval**: Days until next review (1d → 6d × 2.5 progression)
+- **Repetitions**: Number of successful reviews
 
-### Mobile-First Approach
+### Quality Score Guidelines
+- **5 (Perfect)**: Complete recall, no effort
+- **4 (Good)**: Correct with minor hesitation
+- **3 (Fair)**: Correct but difficult to recall
+- **2 (Poor)**: Incorrect but familiar
+- **1 (Bad)**: Complete blackout
+
+### Algorithm Logic
 ```typescript
-// Example responsive component
-<div className="
-  p-4 sm:p-6 md:p-8
-  grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3
-  gap-4 sm:gap-6 md:gap-8
-  text-sm sm:text-base md:text-lg
-">
-  Content
-</div>
+// Simplified SM-2 calculation
+if (quality >= 3) {
+  // Correct response
+  if (repetitions === 0) newInterval = 1;
+  else if (repetitions === 1) newInterval = 6;
+  else newInterval = Math.round(interval * ease);
+
+  newRepetitions = repetitions + 1;
+} else {
+  // Incorrect response
+  newRepetitions = 0;
+  newInterval = 1;
+}
 ```
 
-## Key Implementation Notes
+## API Endpoints
 
-### Authentication Flow
-1. Users login via OAuth2 (Google/WeChat) or email/password
-2. Returns access token (15min) and refresh token (7 days)
-3. Refresh token stored in HttpOnly cookie for security
-4. Access token sent in Authorization header for API requests
+### Authentication
+- `POST /api/v1/auth/login` - User login
+- `POST /api/v1/auth/register` - User registration
+- `POST /api/v1/auth/refresh` - Refresh access token
+- `POST /api/v1/auth/logout` - User logout
+- `GET /api/v1/auth/me` - Get current user
 
-### Performance Targets
-- **LCP** (Largest Contentful Paint): < 2.5 seconds
-- **FID** (First Input Delay): < 100ms
-- **CLS** (Cumulative Layout Shift): < 0.1
-- **First load**: < 2 seconds
-- **API response**: < 500ms
+### Cards
+- `GET /api/v1/cards` - List cards with filtering
+- `POST /api/v1/cards` - Create new card
+- `GET /api/v1/cards/[id]` - Get single card
+- `PUT /api/v1/cards/[id]` - Update card
+- `DELETE /api/v1/cards/[id]` - Soft delete card
+- `POST /api/v1/cards/review` - Submit card review
+- `GET /api/v1/cards/schedule` - Get study schedule
+
+### Data
+- `GET /api/v1/data/sample-cards` - Get sample flashcard data
+
+## Configuration Files
+
+### Core Configurations
+- **next.config.js**: Next.js configuration with React Compiler, security headers, bundle analyzer
+- **tsconfig.json**: TypeScript configuration with strict mode and path aliases
+- **jest.config.ts**: Jest testing configuration
+- **playwright.config.ts**: E2E testing configuration
+- **prisma/schema.prisma**: Database schema
+
+### Environment Variables
+```bash
+# Database
+DATABASE_URL=postgresql://...
+
+# Authentication
+JWT_SECRET=your-jwt-secret
+JWT_REFRESH_SECRET=your-refresh-secret
+ACCESS_TOKEN_EXPIRES_IN=900  # 15 minutes
+REFRESH_TOKEN_EXPIRES_IN=604800  # 7 days
+
+# Application
+NEXT_PUBLIC_API_URL=http://localhost:3000
+NODE_ENV=development
+```
+
+## Development Workflow
+
+### Setup
+1. Install dependencies: `npm install`
+2. Start PostgreSQL: `docker-compose up -d`
+3. Run migrations: `npx prisma migrate deploy`
+4. Seed database: `npx prisma db seed`
+5. Start dev server: `npm run dev`
+
+### Testing Strategy
+- **Unit Tests**: Jest with jsdom for components and utilities
+- **E2E Tests**: Playwright for full user flows
+- **CI/CD**: GitHub Actions automated testing on push/PR
+
+### Code Quality
+- **TypeScript**: Strict mode enabled
+- **ESLint**: Next.js recommended rules
+- **Prettier**: Code formatting (if configured)
+
+## Important Notes
+
+### Build System
+- **Development**: Uses Turbopack (fast refresh)
+- **Production**: Uses Webpack (optimization)
+- **Bundle Analysis**: Available via `npm run analyze`
 
 ### Security Considerations
-- JWT tokens with 15-minute expiry
-- Refresh tokens with 7-day expiry
-- Role-Based Access Control (RBAC)
-- API rate limiting
-- CORS configuration
-- Input validation and sanitization
+- JWT tokens have short expiry (15min access, 7day refresh)
+- Refresh tokens stored in HttpOnly cookies
+- Rate limiting on authentication endpoints
+- Input validation on all API endpoints
 
-## Database Schema (Key Tables)
+### Performance Optimizations
+- Lazy loading of heavy components
+- Image optimization (WebP/AVIF)
+- Code splitting and bundle optimization
+- React Compiler for development performance
 
-### PostgreSQL
-- `users` - User profiles and authentication data
-- `learning_plans` - Personalized study plans
-- `progress` - User progress tracking
-- `resources` - Video/blog resource library
-- `communities` - Forum posts and discussions
-
-### Redis
-- User sessions and authentication state
-- Cached resource data
-- Rate limiting counters
-- Leaderboard data
-
-### PostgreSQL Features
-- JSONB support for flexible data structures
-- Full-text search capabilities
-- Materialized views for analytics
-- Time series data support with partitioning
-
-## Development Guidelines
-
-### Code Style
-- Use TypeScript for type safety
-- Follow ESLint and Prettier configuration
-- Write meaningful commit messages (conventional commits)
-- Include tests for new features
-- Document API endpoints and database changes
-
-### Testing
-- Unit tests for business logic
-- Integration tests for API endpoints
-- E2E tests for user flows
-- Performance testing with Lighthouse
-- Responsive testing across breakpoints
-
-### Deployment
-- Frontend: Vercel or static export
-- Backend: Cloud platforms (AWS/GCP/Azure)
-- Database: Managed services
-- CI/CD: GitHub Actions
-- Monitoring: Application performance and error tracking
-
-## Important Documents
-
-Refer to these documentation files for detailed implementation:
-- `01_高层技术文档.md` - High-level architecture overview
-- `02_详细技术文档.md` - Detailed technical implementation guide
-- `03_技术文档快速参考.md` - Quick reference for developers
-- `4周加速备考方案.md` - 4-week intensive study plan
-- `资源库最终总结.md` - Resource library compilation
-
-## Common Development Tasks
-
-### Adding a New API Endpoint
-1. Define route in `backend/src/routes/[service].ts`
-2. Add controller logic in `backend/src/controllers/[service].ts`
-3. Implement service method in `backend/src/services/[service].ts`
-4. Add frontend service method in `frontend/src/services/api.ts`
-5. Create React component or update existing component
-6. Write tests for both backend and frontend
-
-### Adding a Responsive Component
-1. Create component with mobile-first Tailwind classes
-2. Test with Chrome DevTools device toolbar
-3. Ensure proper breakpoints for all screen sizes
-4. Test on actual devices if possible
-
-### Performance Optimization
-1. Use React.memo for expensive components
-2. Implement virtualization for long lists
-3. Optimize images with proper sizing and format
-4. Use caching strategies for API responses
-5. Monitor Core Web Vitals with Lighthouse
-
-## Environment Variables
-
-### Required Environment Variables
-```bash
-# Frontend
-NEXT_PUBLIC_API_URL=http://localhost:3001
-NEXT_PUBLIC_GOOGLE_CLIENT_ID=your_google_client_id
-
-# Backend
-PORT=3001
-NODE_ENV=development
-DATABASE_URL=postgresql://user:password@localhost:5432/celpip_dev
-REDIS_URL=redis://localhost:6379
-JWT_SECRET=your_jwt_secret_key_min_32_chars
-
-# External Services
-GOOGLE_CLIENT_SECRET=your_google_secret
-AWS_ACCESS_KEY_ID=your_access_key
-AWS_SECRET_ACCESS_KEY=your_secret_key
-```
-
-## Troubleshooting
+### Current Implementation Status
+- **Authentication**: Complete with JWT
+- **Database**: Schema defined, using mock implementation
+- **API Routes**: Complete for auth and cards
+- **Frontend**: Core components implemented
+- **Testing**: Jest and Playwright configured
+- **Security**: Middleware and headers configured
 
 ### Common Issues
-1. **CORS Errors**: Check backend CORS configuration
-2. **Database Connection**: Verify Docker containers are running
-3. **Token Issues**: Check JWT expiry and refresh token logic
-4. **Responsive Issues**: Verify viewport meta tag and Tailwind classes
-5. **Performance Issues**: Use Lighthouse to identify bottlenecks
+- **TypeScript compilation errors**: Check path aliases and imports
+- **Build caching**: Clear `.next` directory if issues persist
+- **Port conflicts**: Use different port if 3000 is occupied
+- **Database connection**: Ensure Docker container is running
 
-### Debug Commands
-```bash
-# Check Docker status
-docker ps
+## Key Dependencies
 
-# View container logs
-docker logs [container-name]
+### Runtime Dependencies
+- `next`: React framework
+- `react`/`react-dom`: UI library
+- `jsonwebtoken`: JWT token handling
+- `bcryptjs`: Password hashing
+- `zod`: Schema validation
+- `date-fns`: Date utilities
 
-# Check database connections
-cd backend && npm run db:test
-
-# Run linting
-cd backend && npm run lint
-cd frontend && npm run lint
-```
+### Development Dependencies
+- `@types/*`: TypeScript type definitions
+- `eslint`: Code linting
+- `jest`: Unit testing
+- `playwright`: E2E testing
+- `prisma`: Database ORM
