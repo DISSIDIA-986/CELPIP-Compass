@@ -1,7 +1,8 @@
 'use client'
 
-import { lazy, Suspense, ComponentType } from 'react'
+import { lazy, Suspense } from 'react'
 import { LoadingSpinner } from './ui/LoadingSpinner'
+import type { Flashcard } from '@/types/flashcards'
 
 // Lazy load heavy components for better performance
 export const StudyDashboard = lazy(() =>
@@ -45,7 +46,7 @@ export const LazySampleCardsGrid = ({
   showFilters,
   limit
 }: {
-  onCardSelect?: (card: any) => void
+  onCardSelect?: (card: Flashcard) => void
   showFilters?: boolean
   limit?: number
 }) => (

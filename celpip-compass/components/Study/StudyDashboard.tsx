@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Flashcard, CardType, CardStatus } from '@/types/flashcards';
 import { SpacedRepetitionService } from '@/services/spaced-repetition-service';
 import { DataService } from '@/services/data-service';
@@ -48,6 +48,7 @@ export const StudyDashboard: React.FC = () => {
   const [selectedType, setSelectedType] = useState<CardType | 'all'>('all');
   const [sessionLimit, setSessionLimit] = useState<number>(10);
   const [studyMode, setStudyMode] = useState<'daily' | 'focused'>('daily');
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   // Helper functions
   const calculateStudyStreak = (cards: Flashcard[]): number => {
@@ -134,7 +135,8 @@ export const StudyDashboard: React.FC = () => {
     return "text-red-600 bg-red-50";
   };
 
-  const loadStudyData = useCallback(() => {
+  // Use useMemo for derived data computation
+  const studyData = useMemo(() => {
     const allCards = DataService.getAllCards();
     const filteredCards = selectedType === 'all'
       ? allCards
@@ -150,26 +152,33 @@ export const StudyDashboard: React.FC = () => {
       cardsForReview,
       filteredCards
     };
-  }, [selectedType, sessionLimit]);
+  }, [selectedType, sessionLimit, refreshTrigger]);
 
+  // Function to trigger data reload
+  const loadStudyData = useCallback(() => {
+    setRefreshTrigger(prev => prev + 1);
+  }, []);
+
+  // Initialize and reload study data when dependencies change
   useEffect(() => {
-    const { cardsForReview, filteredCards } = loadStudyData();
-    const newSession = {
-      ...session,
-      sessionCards: cardsForReview,
-      currentCard: cardsForReview.length > 0 ? cardsForReview[0] : null,
-      isSessionActive: cardsForReview.length > 0,
-      completedCards: []
+    // Wrap in async function to avoid synchronous setState in effect
+    const initializeSession = async () => {
+      const { cardsForReview, filteredCards } = studyData;
+
+      // Use functional update to avoid dependency on session state
+      setSession(prevSession => ({
+        ...prevSession,
+        sessionCards: cardsForReview,
+        currentCard: cardsForReview.length > 0 ? cardsForReview[0] : null,
+        isSessionActive: cardsForReview.length > 0,
+        completedCards: []
+      }));
+
+      // Update stats separately after session update
+      updateStats(filteredCards);
     };
-    // Batch state updates to avoid multiple renders
-    setSession(newSession);
-    updateStats(filteredCards);
-  }, [loadStudyData, updateStats]);
-
-  // Effects
-  useEffect(() => {
-    loadStudyData();
-  }, [selectedType, loadStudyData, sessionLimit, studyMode]);
+    initializeSession();
+  }, [studyData, updateStats]);
 
   const progressPercentage = session.sessionCards.length > 0
     ? ((session.sessionCards.length + session.completedCards.length) / (session.sessionCards.length + session.completedCards.length)) * 100

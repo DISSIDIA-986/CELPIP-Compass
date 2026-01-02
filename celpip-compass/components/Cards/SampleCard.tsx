@@ -16,18 +16,14 @@ export const SampleCard: React.FC<SampleCardProps> = ({
 }) => {
   const getCardTypeLabel = (type: CardType) => {
     switch (type) {
-      case CardType.WRITING:
-        return '写作';
-      case CardType.SPEAKING:
+      case CardType.WRITING_TASK1:
+        return '写作 Task 1';
+      case CardType.WRITING_TASK2:
+        return '写作 Task 2';
+      case CardType.SPEAKING_TASK:
         return '口语';
-      case CardType.LISTENING:
-        return '听力';
-      case CardType.READING:
-        return '阅读';
-      case CardType.GRAMMAR:
-        return '语法';
-      case CardType.VOCABULARY:
-        return '词汇';
+      case CardType.LISTENING_KEYWORD:
+        return '听力关键词';
       default:
         return type;
     }
@@ -87,7 +83,7 @@ export const SampleCard: React.FC<SampleCardProps> = ({
       <div className="flex justify-between items-start mb-3">
         <div className="flex-1">
           <h3 className="font-semibold text-lg text-gray-900 mb-1">
-            {card.question}
+            {card.title}
           </h3>
           <span className={`inline-block px-2 py-1 text-xs rounded-full border ${getStatusColor(card.status)}`}>
             {card.status === CardStatus.NEW && '新卡片'}
@@ -106,12 +102,14 @@ export const SampleCard: React.FC<SampleCardProps> = ({
 
 
       {/* 核心短语 - 显示部分内容 */}
-      <div className="mb-3">
-        <div className="text-sm text-gray-600 mb-2">核心短语：</div>
-        <div className="space-y-1">
-          <p className="text-sm text-gray-700">
-            {card.practice.question}
-          </p>
+      {card.practice && (
+        <div className="mb-3">
+          <div className="text-sm text-gray-600 mb-2">核心短语：</div>
+          <div className="space-y-1">
+            <p className="text-sm text-gray-700">
+              {card.practice.question}
+            </p>
+          </div>
         </div>
       )}
 

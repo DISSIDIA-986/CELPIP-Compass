@@ -79,26 +79,35 @@ export function SecurityProvider({ children }: { children: React.ReactNode }) {
       window.addEventListener('x-frame-options', handleSecurityEvent)
       window.addEventListener('security-policy-violation', handleSecurityEvent)
 
+      // Store original console methods for cleanup
+      const originalLog = console.log
+      const originalWarn = console.warn
+
       // Monitor for suspicious patterns in console
-      const originalConsole = console
-      console = {
-        ...console,
-        log: (...args: any[]) => {
-          args.forEach(arg => {
-            if (typeof arg === 'string' && arg.includes('<script>')) {
-              console.warn('Potential XSS attempt in console.log')
-            }
-          })
-          originalConsole.log.apply(originalConsole, args)
-        },
-        warn: (...args: any[]) => {
-          args.forEach(arg => {
-            if (typeof arg === 'string' && arg.includes('<script>')) {
-              console.warn('Potential XSS attempt in console.warn')
-            }
-          })
-          originalConsole.warn.apply(originalConsole, args)
-        }
+      console.log = (...args: unknown[]) => {
+        args.forEach(arg => {
+          if (typeof arg === 'string' && arg.includes('<script>')) {
+            originalWarn('Potential XSS attempt in console.log')
+          }
+        })
+        originalLog(...args)
+      }
+
+      console.warn = (...args: unknown[]) => {
+        args.forEach(arg => {
+          if (typeof arg === 'string' && arg.includes('<script>')) {
+            originalWarn('Potential XSS attempt in console.warn')
+          }
+        })
+        originalWarn(...args)
+      }
+
+      // Cleanup: restore original console methods
+      return () => {
+        console.log = originalLog
+        console.warn = originalWarn
+        window.removeEventListener('x-frame-options', handleSecurityEvent)
+        window.removeEventListener('security-policy-violation', handleSecurityEvent)
       }
     }
   }, [])
@@ -170,21 +179,17 @@ export function SanitizedInput({
   )
 }
 
+// Helper function for CSRF token generation (defined before usage)
+function generateCSRFToken(): string {
+  const array = new Uint32Array(8)
+  crypto.getRandomValues(array)
+  return Array.from(array, dec => ('0' + dec.toString(16)).substr(-2)).join('')
+}
+
 // CSRF protection component
 export function CSRFToken() {
-  const [csrfToken, setCSRFToken] = useState('')
-
-  useEffect(() => {
-    // Generate or retrieve CSRF token
-    const token = generateCSRFToken()
-    setCSRFToken(token)
-  }, [])
-
-  const generateCSRFToken = (): string => {
-    const array = new Uint32Array(8)
-    crypto.getRandomValues(array)
-    return Array.from(array, dec => ('0' + dec.toString(16)).substr(-2)).join('')
-  }
+  // Use lazy initializer to avoid setState in effect
+  const [csrfToken] = useState(() => generateCSRFToken())
 
   return (
     <input
@@ -199,7 +204,7 @@ export function CSRFToken() {
 // Rate limiting display component
 export function RateLimitIndicator() {
   const [remaining, setRemaining] = useState(100)
-  const [resetTime, setResetTime] = useState(Date.now() + 15 * 60 * 1000)
+  const [timeRemaining, setTimeRemaining] = useState(15 * 60) // seconds until reset
 
   useEffect(() => {
     // Simulate rate limiting countdown
@@ -207,7 +212,9 @@ export function RateLimitIndicator() {
       if (remaining > 0) {
         setRemaining(prev => prev - 1)
       }
-    }, 9000) // 100 requests / 15 minutes = 1 request every 9 seconds
+      // Update time remaining every second
+      setTimeRemaining(prev => Math.max(0, prev - 1))
+    }, 1000)
 
     return () => clearInterval(interval)
   }, [remaining])
@@ -218,7 +225,7 @@ export function RateLimitIndicator() {
     <div className="fixed bottom-4 right-4 bg-red-600 text-white p-2 rounded text-xs">
       Rate Limited: {remaining} requests remaining
       <div className="mt-1">
-        Resets in: {Math.ceil((resetTime - Date.now()) / 1000)}s
+        Resets in: {timeRemaining}s
       </div>
     </div>
   )
