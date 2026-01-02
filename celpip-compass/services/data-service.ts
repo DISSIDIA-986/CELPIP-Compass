@@ -144,4 +144,11 @@ export class DataService {
 
     return recommendations;
   }
+
+  static updateCard(updatedCard: Flashcard): void {
+    const index = sampleFlashcards.findIndex(card => card.id === updatedCard.id);
+    if (index !== -1) {
+      sampleFlashcards[index] = updatedCard;
+    }
+  }
 }
