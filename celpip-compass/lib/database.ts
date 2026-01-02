@@ -153,6 +153,7 @@ class MockDatabase {
 }
 
 // Export a mock database for development
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const prisma = new MockDatabase() as any;
 
 // Log that we're using mock database
