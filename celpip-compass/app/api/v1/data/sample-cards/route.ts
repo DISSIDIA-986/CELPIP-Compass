@@ -1,6 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { sampleFlashcards, aiPrompts } from '@/data/sample-cards';
-import { ApiResponse } from '@/types/flashcards';
+import { CardType, DifficultyLevel, CardStatus, Flashcard } from '@/types/flashcards';
+import { ApiResponse } from '@/types/auth';
+
+// Simple mock data
+const sampleFlashcards: Flashcard[] = [
+  {
+    id: '1',
+    type: CardType.WRITING,
+    question: 'Write a formal email to your landlord',
+    answer: 'Dear Landlord, I hope this message finds you well...',
+    explanation: 'Formal email with proper structure and tone.',
+    tags: ['formal', 'email', 'landlord'],
+    difficulty: DifficultyLevel.INTERMEDIATE,
+    status: CardStatus.LEARNING,
+    reviewCount: 1,
+    correctCount: 0,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  }
+];
+
+const aiPrompts = [
+  'Generate a CELPIP writing task about apartment rental',
+  'Create a listening comprehension about job interviews',
+  'Design a speaking prompt for describing a neighborhood'
+];
 
 // GET /api/v1/data/sample-cards - 获取示例卡片数据
 export async function GET(request: NextRequest) {
@@ -33,7 +57,7 @@ export async function GET(request: NextRequest) {
     };
 
     return NextResponse.json(response, { status: 200 });
-  } catch (error) {
+  } catch {
     const response: ApiResponse<never> = {
       success: false,
       error: {
@@ -46,7 +70,7 @@ export async function GET(request: NextRequest) {
 }
 
 // POST /api/v1/data/sample-cards/reset - 重置示例卡片数据
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     // 这里将来可以连接到数据库来重置数据
     // 目前返回成功响应
@@ -57,7 +81,7 @@ export async function POST(request: NextRequest) {
     };
 
     return NextResponse.json(response, { status: 200 });
-  } catch (error) {
+  } catch {
     const response: ApiResponse<never> = {
       success: false,
       error: {

@@ -1,256 +1,84 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
-import {
-  CardType,
-  DifficultyLevel,
-  CardStatus,
-  ApiResponse,
-  QualityScores
-} from '@/types/flashcards';
+import { CardType, DifficultyLevel, CardStatus, Flashcard } from '@/types/flashcards';
+import { ApiResponse } from '@/types/auth';
 
-// 模拟数据库
-let mockFlashcards: any[] = [
+// Simple mock data matching the main flashcard interface
+const mockFlashcards: Flashcard[] = [
   {
     id: '1',
-    type: CardType.WRITING_TASK1,
-    title: '向邻居投诉噪音问题',
-    scenario: '邻居在夜间产生过多噪音，影响休息',
-    tone: 'semi-formal',
-    difficulty: DifficultyLevel.CLB8,
+    type: CardType.WRITING,
+    question: 'Write a formal email to your landlord about repair issues',
+    answer: 'Dear Landlord, I hope this message finds you well. I am writing to inform you about several repair issues in my apartment that need attention. The kitchen faucet has been leaking for the past week, and the heating system is not working properly. Could you please arrange for a maintenance visit to address these matters? Thank you for your attention to this issue.',
+    explanation: 'This email demonstrates formal language, clear description of problems, and polite request for action.',
+    tags: ['formal', 'email', 'repairs', 'landlord'],
+    difficulty: DifficultyLevel.INTERMEDIATE,
     status: CardStatus.LEARNING,
-    essentialPhrases: {
-      opening: [
-        'I hope this message finds you well.',
-        'I\'m writing to discuss a matter that\'s been concerning me.',
-        'I would appreciate it if we could address this issue.'
-      ],
-      purpose: [
-        'The main reason for my message is to address the noise issue.',
-        'I wanted to bring to your attention the excessive noise during evenings.',
-        'My concern is about the disturbance this is causing.'
-      ],
-      details: [
-        'The noise typically starts around 10 PM and continues until midnight.',
-        'It\'s making it difficult for me to sleep and focus during work.',
-        'I\'ve noticed this has been happening for the past two weeks.'
-      ],
-      closing: [
-        'I would be grateful if we could find a solution to this matter.',
-        'Thank you for your understanding and cooperation.',
-        'I look forward to your response.'
-      ]
-    },
-    upgrades: {
-      vocabulary: {
-        'noisy': ['excessive', 'disturbing', 'intrusive'],
-        'problem': ['issue', 'concern', 'matter'],
-        'make': ['cause', 'result in', 'lead to']
-      },
-      structure: {
-        'I\'m worried about the noise.': 'I\'m deeply concerned about the excessive noise that has been occurring.',
-        'Can you stop it?': 'I would greatly appreciate it if you could take measures to reduce the noise levels.'
-      }
-    },
-    practice: {
-      question: 'Write an email to your neighbor about noise disturbance during evenings.',
-      keyPoints: ['specific times', 'impact on you', 'requested solution', 'polite tone']
-    },
-    reviewCount: 3,
-    correctCount: 2,
-    averageQualityScore: 4.2,
-    totalStudyTime: 450,
-    metadata: {
-      ease: 2.5,
-      interval: 3,
-      repetitions: 2,
-      dueDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000) // 3天后
-    },
-    lastReviewedAt: new Date(),
-    nextReviewAt: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
-    createdAt: new Date(),
+    reviewCount: 2,
+    correctCount: 1,
+    createdAt: new Date('2024-01-01'),
     updatedAt: new Date(),
-    isDeleted: false
+    nextReviewDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000)
+  },
+  {
+    id: '2',
+    type: CardType.LISTENING,
+    question: 'Listen to a conversation about renting an apartment and answer: What are the important factors when choosing an apartment?',
+    answer: 'Important factors include location, rent price, size of the apartment, amenities included, lease terms, and condition of the property.',
+    explanation: 'This tests listening comprehension for identifying key points in a conversation about housing.',
+    tags: ['listening', 'conversation', 'renting', 'housing'],
+    difficulty: DifficultyLevel.BEGINNER,
+    status: CardStatus.REVIEW,
+    reviewCount: 5,
+    correctCount: 4,
+    createdAt: new Date('2024-01-02'),
+    updatedAt: new Date(),
+    nextReviewDate: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000)
   }
 ];
 
-// 模拟复习记录
-let mockReviews: any[] = [];
-
-// 间隔重复算法 (SM2)
-function sm2Algorithm(card: any, quality: number) {
-  const { ease, interval, repetitions } = card.metadata || { ease: 2.5, interval: 0, repetitions: 0 };
-
-  if (quality >= 3) {
-    if (repetitions === 0) {
-      card.metadata.interval = 1;
-    } else if (repetitions === 1) {
-      card.metadata.interval = 6;
-    } else {
-      card.metadata.interval = Math.round(card.metadata.interval * card.metadata.ease);
-    }
-    card.metadata.repetitions++;
-  } else {
-    card.metadata.repetitions = 0;
-    card.metadata.interval = 1;
-  }
-
-  card.metadata.ease = Math.max(1.3, card.metadata.ease + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02)));
-
-  const now = new Date();
-  card.metadata.dueDate = new Date(now.getTime() + card.metadata.interval * 24 * 60 * 60 * 1000);
-  card.nextReviewAt = card.metadata.dueDate;
-  card.lastReviewedAt = now;
-
-  return card;
-}
-
-// 计算综合质量分数
-function calculateOverallQuality(scores: QualityScores): number {
-  const weights = {
-    accuracy: 0.3,
-    fluency: 0.3,
-    completeness: 0.2,
-    pronunciation: 0.1,
-    structure: 0.1
-  };
-
-  const overall =
-    scores.accuracy * weights.accuracy +
-    scores.fluency * weights.fluency +
-    scores.completeness * weights.completeness +
-    (scores.pronunciation || 0) * weights.pronunciation +
-    (scores.structure || 0) * weights.structure;
-
-  return Math.round(overall * 10) / 10; // 保留一位小数
-}
-
-// 验证Schema
-const ReviewSchema = z.object({
-  cardId: z.string(),
-  studySessionId: z.string().optional(),
-  scores: z.object({
-    accuracy: z.number().min(0).max(5),
-    fluency: z.number().min(0).max(5),
-    completeness: z.number().min(0).max(5),
-    pronunciation: z.number().min(0).max(5).optional(),
-    structure: z.number().min(0).max(5).optional()
-  }),
-  timeTakenSeconds: z.number().min(0).optional(),
-  userNotes: z.string().optional(),
-  isCorrect: z.boolean()
-});
-
-// POST /api/v1/cards/review - 记录复习
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const validatedData = ReviewSchema.parse(body);
 
-    // 查找卡片
-    const card = mockFlashcards.find(c => c.id === validatedData.cardId);
-
-    if (!card) {
+    // Simple validation
+    if (!body.cards || !Array.isArray(body.cards)) {
       const response: ApiResponse<never> = {
         success: false,
         error: {
-          code: 'CARD_NOT_FOUND',
-          message: 'Card not found',
-          details: `The card with ID ${validatedData.cardId} does not exist.`
-        }
-      };
-      return NextResponse.json(response, { status: 404 });
-    }
-
-    // 计算综合质量分数
-    const overallQuality = calculateOverallQuality(validatedData.scores);
-
-    // 更新卡片统计
-    card.reviewCount++;
-    if (validatedData.isCorrect) {
-      card.correctCount++;
-    }
-
-    // 更新平均质量分数
-    const totalQuality = card.averageQualityScore * (card.reviewCount - 1) + overallQuality;
-    card.averageQualityScore = Math.round((totalQuality / card.reviewCount) * 10) / 10;
-
-    // 更新学习时间
-    if (validatedData.timeTakenSeconds) {
-      card.totalStudyTime += validatedData.timeTakenSeconds;
-    }
-
-    // 应用间隔重复算法
-    const updatedCard = sm2Algorithm(card, overallQuality);
-
-    // 创建复习记录
-    const reviewRecord = {
-      id: Math.random().toString(36).substr(2, 9),
-      cardId: validatedData.cardId,
-      studySessionId: validatedData.studySessionId,
-      ...validatedData.scores,
-      overallQuality,
-      reviewTime: new Date(),
-      timeTakenSeconds: validatedData.timeTakenSeconds,
-      userNotes: validatedData.userNotes,
-      isCorrect: validatedData.isCorrect,
-      createdAt: new Date()
-    };
-
-    mockReviews.push(reviewRecord);
-
-    // 更新卡片状态
-    if (overallQuality >= 4.5) {
-      updatedCard.status = CardStatus.MASTERED;
-    } else if (card.reviewCount >= 3) {
-      updatedCard.status = CardStatus.REVIEW;
-    }
-
-    const response: ApiResponse<{
-      reviewId: string;
-      cardId: string;
-      nextReviewAt: Date;
-      interval: number;
-      repetitions: number;
-      ease: number;
-      stats: {
-        totalReviews: number;
-        successRate: number;
-        averageQuality: number;
-        averageResponseTime: number;
-      };
-    }> = {
-      success: true,
-      data: {
-        reviewId: reviewRecord.id,
-        cardId: validatedData.cardId,
-        nextReviewAt: updatedCard.nextReviewAt,
-        interval: updatedCard.metadata.interval,
-        repetitions: updatedCard.metadata.repetitions,
-        ease: updatedCard.metadata.ease,
-        stats: {
-          totalReviews: card.reviewCount,
-          successRate: Math.round((card.correctCount / card.reviewCount) * 100 * 10) / 10,
-          averageQuality: card.averageQualityScore,
-          averageResponseTime: card.totalStudyTime / card.reviewCount
-        }
-      },
-      message: 'Review recorded successfully'
-    };
-
-    return NextResponse.json(response, { status: 201 });
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      const response: ApiResponse<never> = {
-        success: false,
-        error: {
-          code: 'INVALID_REQUEST_BODY',
-          message: 'Invalid request body',
-          details: error.errors
+          code: 'INVALID_REQUEST',
+          message: 'Cards array is required'
         }
       };
       return NextResponse.json(response, { status: 400 });
     }
 
+    // Get cards due for review
+    const now = new Date();
+    const cardsForReview = mockFlashcards.filter(card => {
+      if (!card.nextReviewDate) return false;
+      return card.nextReviewDate <= now && card.status !== CardStatus.MASTERED;
+    });
+
+    // Limit results
+    const limit = body.limit || 10;
+    const reviewedCards = cardsForReview.slice(0, limit);
+
+    const response: ApiResponse<{
+      cards: Flashcard[];
+      totalCards: number;
+      reviewCount: number;
+    }> = {
+      success: true,
+      data: {
+        cards: reviewedCards,
+        totalCards: cardsForReview.length,
+        reviewCount: reviewedCards.length
+      }
+    };
+
+    return NextResponse.json(response, { status: 200 });
+  } catch (error) {
+    console.error('Review route error:', error);
     const response: ApiResponse<never> = {
       success: false,
       error: {
