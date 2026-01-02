@@ -1,0 +1,95 @@
+name: PR Check
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  pr-check:
+    name: PR Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check for changes
+        id: changes
+        run: |
+          echo "files=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | wc -l)" >> $GITHUB_OUTPUT
+
+      - name: Lint changed files
+        run: npm run lint
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Run affected tests
+        run: npm test -- --passWithNoTests
+        env:
+          JWT_SECRET: test-secret
+          JWT_REFRESH_SECRET: test-refresh-secret
+          NODE_ENV: test
+
+      - name: Build check
+        run: npm run build
+        env:
+          JWT_SECRET: build-secret
+          JWT_REFRESH_SECRET: build-refresh-secret
+          NODE_ENV: production
+
+      - name: Comment on PR
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const botComment = comments.find(comment =>
+              comment.user.type === 'Bot' &&
+              comment.body.includes('## PR Check Results')
+            );
+
+            const status = '${{ job.status }}' === 'success' ? '✅' : '❌';
+            const body = `## PR Check Results ${status}
+
+            | Check | Status |
+            |-------|--------|
+            | Lint | ${{ steps.lint.outcome || '✅' }} |
+            | TypeScript | ${{ steps.typecheck.outcome || '✅' }} |
+            | Tests | ${{ steps.tests.outcome || '✅' }} |
+            | Build | ${{ steps.build.outcome || '✅' }} |
+
+            ---
+            *Updated: ${new Date().toISOString()}*`;
+
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body
+              });
+            }
