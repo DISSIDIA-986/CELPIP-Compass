@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Flashcard, CardType, DifficultyLevel } from '@/types/flashcards';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Flashcard, CardType, DifficultyLevel, CardStatus } from '@/types/flashcards';
 import { DataService } from '@/services/data-service';
 import { SampleCard } from './SampleCard';
 
@@ -24,11 +24,11 @@ export const SampleCardsGrid: React.FC<SampleCardsGridProps> = ({
 
   useEffect(() => {
     const allCards = DataService.getAllCards();
-    setCards(allCards.slice(0, limit));
+    setCards(allCards);
     setFilteredCards(allCards.slice(0, limit));
   }, [limit]);
 
-  useEffect(() => {
+  const filterCards = useCallback(() => {
     let filtered = cards;
 
     // 按类型过滤
@@ -49,8 +49,12 @@ export const SampleCardsGrid: React.FC<SampleCardsGridProps> = ({
       );
     }
 
-    setFilteredCards(filtered);
+    return filtered;
   }, [cards, selectedType, selectedDifficulty, searchQuery]);
+
+  useEffect(() => {
+    setFilteredCards(filterCards().slice(0, limit));
+  }, [filterCards, limit]);
 
   const handleCardClick = (card: Flashcard) => {
     if (onCardSelect) {

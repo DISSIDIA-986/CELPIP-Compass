@@ -9,6 +9,7 @@ interface QualityButtonProps {
   description: string;
   selected?: boolean;
   onClick: () => void;
+  disabled?: boolean;
 }
 
 const QualityButton: React.FC<QualityButtonProps> = ({
@@ -16,7 +17,8 @@ const QualityButton: React.FC<QualityButtonProps> = ({
   label,
   description,
   selected = false,
-  onClick
+  onClick,
+  disabled = false
 }) => {
   const getQualityColor = (q: number) => {
     if (q >= 4) return 'bg-green-100 border-green-500 text-green-700 hover:bg-green-200';
@@ -27,11 +29,12 @@ const QualityButton: React.FC<QualityButtonProps> = ({
   return (
     <button
       onClick={onClick}
+      disabled={disabled}
       className={`w-full p-3 rounded-lg border-2 transition-all duration-200 text-left ${
         selected
           ? 'ring-2 ring-blue-500 ring-offset-2 ' + getQualityColor(quality)
           : getQualityColor(quality)
-      }`}
+      } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
     >
       <div className="font-semibold text-lg">{label}</div>
       <div className="text-sm mt-1">{description}</div>

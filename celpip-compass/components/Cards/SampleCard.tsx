@@ -16,14 +16,18 @@ export const SampleCard: React.FC<SampleCardProps> = ({
 }) => {
   const getCardTypeLabel = (type: CardType) => {
     switch (type) {
-      case CardType.WRITING_TASK1:
-        return '邮件写作';
-      case CardType.WRITING_TASK2:
-        return '观点论证';
-      case CardType.SPEAKING_TASK:
-        return '口语任务';
-      case CardType.LISTENING_KEYWORD:
-        return '听力关键词';
+      case CardType.WRITING:
+        return '写作';
+      case CardType.SPEAKING:
+        return '口语';
+      case CardType.LISTENING:
+        return '听力';
+      case CardType.READING:
+        return '阅读';
+      case CardType.GRAMMAR:
+        return '语法';
+      case CardType.VOCABULARY:
+        return '词汇';
       default:
         return type;
     }
@@ -52,8 +56,6 @@ export const SampleCard: React.FC<SampleCardProps> = ({
         return 'bg-yellow-100 text-yellow-700 border-yellow-300';
       case CardStatus.MASTERED:
         return 'bg-green-100 text-green-700 border-green-300';
-      case CardStatus.ARCHIVED:
-        return 'bg-purple-100 text-purple-700 border-purple-300';
       default:
         return 'bg-gray-100 text-gray-700 border-gray-300';
     }
@@ -85,71 +87,33 @@ export const SampleCard: React.FC<SampleCardProps> = ({
       <div className="flex justify-between items-start mb-3">
         <div className="flex-1">
           <h3 className="font-semibold text-lg text-gray-900 mb-1">
-            {card.title}
+            {card.question}
           </h3>
           <span className={`inline-block px-2 py-1 text-xs rounded-full border ${getStatusColor(card.status)}`}>
             {card.status === CardStatus.NEW && '新卡片'}
             {card.status === CardStatus.LEARNING && '学习中'}
             {card.status === CardStatus.REVIEW && '复习中'}
             {card.status === CardStatus.MASTERED && '已掌握'}
-            {card.status === CardStatus.ARCHIVED && '已归档'}
+            {card.status === CardStatus.NEW ? '新卡片' : card.status === CardStatus.LEARNING ? '学习中' : card.status === CardStatus.REVIEW ? '复习中' : card.status === CardStatus.MASTERED ? '已掌握' : ''}
           </span>
         </div>
         <div className="flex flex-col gap-1 ml-2">
-          {card.tone && (
-            <span className={`px-2 py-1 text-xs rounded-full ${getToneColor(card.tone)}`}>
-              {card.tone === 'formal' && '正式'}
-              {card.tone === 'semi-formal' && '半正式'}
-              {card.tone === 'informal' && '非正式'}
-              {card.tone === 'neutral' && '中性'}
-            </span>
-          )}
           <span className="text-xs text-gray-500">
             {getDifficultyLabel(card.difficulty)}
           </span>
         </div>
       </div>
 
-      {/* 场景描述 */}
-      <div className="mb-3">
-        <div className="text-sm text-gray-600 mb-1">场景：</div>
-        <p className="text-sm text-gray-700 italic">
-          {card.scenario}
-        </p>
-      </div>
 
       {/* 核心短语 - 显示部分内容 */}
       <div className="mb-3">
         <div className="text-sm text-gray-600 mb-2">核心短语：</div>
         <div className="space-y-1">
-          {Object.entries(card.essentialPhrases).slice(0, 2).map(([key, phrases]) => (
-            <div key={key} className="text-sm">
-              <span className="font-medium text-gray-700">
-                {key === 'opening' && '开头：'}
-                {key === 'purpose' && '目的：'}
-                {key === 'details' && '细节：'}
-                {key === 'closing' && '结尾：'}
-                {key === 'introduction' && '引言：'}
-                {key === 'topicSentence' && '主题句：'}
-                {key === 'supporting' && '支撑：'}
-                {key === 'examples' && '例子：'}
-                {key === 'conclusion' && '结论：'}
-              </span>
-              <span className="text-gray-600 ml-1">
-                {phrases[0] || '...'}
-              </span>
-            </div>
-          ))}
+          <p className="text-sm text-gray-700">
+            {card.practice.question}
+          </p>
         </div>
-      </div>
-
-      {/* 练习提示 */}
-      <div className="mb-3">
-        <div className="text-sm text-gray-600 mb-1">练习：</div>
-        <p className="text-sm text-gray-700">
-          {card.practice.question}
-        </p>
-      </div>
+      )}
 
       {/* 学习统计 */}
       {card.reviewCount > 0 && (
