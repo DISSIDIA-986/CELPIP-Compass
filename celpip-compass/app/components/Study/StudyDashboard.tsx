@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Flashcard, CardType, CardStatus } from '@/types/flashcards';
 import { spacedRepetitionService } from '@/services/spaced-repetition-service';
 import { dataService } from '@/services/data-service';
@@ -48,12 +48,13 @@ export const StudyDashboard: React.FC = () => {
   const [selectedType, setSelectedType] = useState<CardType | 'all'>('all');
   const [sessionLimit, setSessionLimit] = useState<number>(10);
   const [studyMode, setStudyMode] = useState<'daily' | 'focused'>('daily');
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   // Helper functions
   const calculateStudyStreak = (cards: Flashcard[]): number => {
     const recentReviews = cards.filter(card => {
-      if (!card.nextReviewDate) return false;
-      const daysSinceReview = (Date.now() - card.nextReviewDate.getTime()) / (1000 * 60 * 60 * 24);
+      if (!card.nextReviewAt) return false;
+      const daysSinceReview = (Date.now() - new Date(card.nextReviewAt).getTime()) / (1000 * 60 * 60 * 24);
       return daysSinceReview <= 7;
     });
     return Math.min(recentReviews.length, 7);
@@ -73,7 +74,7 @@ export const StudyDashboard: React.FC = () => {
     });
   }, []);
 
-  
+
   const handleQualitySelect = (quality: number) => {
     if (!session.currentCard) return;
 
@@ -128,7 +129,8 @@ export const StudyDashboard: React.FC = () => {
     return "text-red-600 bg-red-50";
   };
 
-  const loadStudyData = useCallback(() => {
+  // Use useMemo for derived data computation
+  const studyData = useMemo(() => {
     const allCards = dataService.getFlashcards();
     const filteredCards = selectedType === 'all'
       ? allCards
@@ -143,30 +145,52 @@ export const StudyDashboard: React.FC = () => {
       cardsForReview,
       filteredCards
     };
-  }, [selectedType, sessionLimit]);
+  }, [selectedType, sessionLimit, refreshTrigger]);
 
+  // Function to trigger data reload
+  const loadStudyData = useCallback(() => {
+    setRefreshTrigger(prev => prev + 1);
+  }, []);
+
+  // Initialize and reload study data when dependencies change
   useEffect(() => {
-    const { cardsForReview, filteredCards } = loadStudyData();
-    const newSession = {
-      ...session,
-      sessionCards: cardsForReview,
-      currentCard: cardsForReview.length > 0 ? cardsForReview[0] : null,
-      isSessionActive: cardsForReview.length > 0,
-      completedCards: []
+    // Wrap in async function to avoid synchronous setState in effect
+    const initializeSession = async () => {
+      const { cardsForReview, filteredCards } = studyData;
+
+      // Use functional update to avoid dependency on session state
+      setSession(prevSession => ({
+        ...prevSession,
+        sessionCards: cardsForReview,
+        currentCard: cardsForReview.length > 0 ? cardsForReview[0] : null,
+        isSessionActive: cardsForReview.length > 0,
+        completedCards: []
+      }));
+
+      // Update stats separately after session update
+      updateStats(filteredCards);
     };
-    // Batch state updates to avoid multiple renders
-    setSession(newSession);
-    updateStats(filteredCards);
-  }, [loadStudyData, updateStats]);
-
-  // Effects
-  useEffect(() => {
-    loadStudyData();
-  }, [selectedType, loadStudyData, sessionLimit, studyMode]);
+    initializeSession();
+  }, [studyData, updateStats]);
 
   const progressPercentage = session.sessionCards.length > 0
     ? ((session.sessionCards.length + session.completedCards.length) / (session.sessionCards.length + session.completedCards.length)) * 100
     : 0;
+
+  const getCardTypeLabel = (type: CardType) => {
+    switch (type) {
+      case CardType.WRITING_TASK1:
+        return '写作 Task 1';
+      case CardType.WRITING_TASK2:
+        return '写作 Task 2';
+      case CardType.SPEAKING_TASK:
+        return '口语';
+      case CardType.LISTENING_KEYWORD:
+        return '听力关键词';
+      default:
+        return type;
+    }
+  };
 
   return (
     <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
@@ -247,10 +271,10 @@ export const StudyDashboard: React.FC = () => {
                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="all">全部类型</option>
-                <option value={CardType.WRITING}>写作</option>
-                <option value={CardType.SPEAKING}>口语</option>
-                <option value={CardType.LISTENING}>听力</option>
-                <option value={CardType.READING}>阅读</option>
+                <option value={CardType.WRITING_TASK1}>{getCardTypeLabel(CardType.WRITING_TASK1)}</option>
+                <option value={CardType.WRITING_TASK2}>{getCardTypeLabel(CardType.WRITING_TASK2)}</option>
+                <option value={CardType.SPEAKING_TASK}>{getCardTypeLabel(CardType.SPEAKING_TASK)}</option>
+                <option value={CardType.LISTENING_KEYWORD}>{getCardTypeLabel(CardType.LISTENING_KEYWORD)}</option>
               </select>
             </div>
 
@@ -382,7 +406,7 @@ export const StudyDashboard: React.FC = () => {
           <div className="bg-white rounded-lg shadow-sm border p-6">
             <div className="text-center">
               <div className="text-4xl font-bold text-green-600 mb-4">
-                🎉 学习完成！
+                学习完成！
               </div>
               <p className="text-lg text-gray-600 mb-6">
                 本次学习已完成 {session.completedCards.length} 张卡片
@@ -396,7 +420,7 @@ export const StudyDashboard: React.FC = () => {
                 </div>
                 <div className="bg-blue-50 p-4 rounded-lg">
                   <div className="text-xl font-bold text-blue-600">
-                    {Math.round(session.completedCards.reduce((sum, card) => sum + (card.correctCount / card.reviewCount) * 100, 0) / session.completedCards.length * 10) / 10}
+                    {Math.round(session.completedCards.reduce((sum: number, card: Flashcard) => sum + (card.correctCount / card.reviewCount) * 100, 0) / session.completedCards.length * 10) / 10}
                   </div>
                   <div className="text-sm text-blue-600">平均质量分</div>
                 </div>

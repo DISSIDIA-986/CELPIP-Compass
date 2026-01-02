@@ -2,8 +2,8 @@
 
 import React, { useState } from 'react';
 import { Flashcard, CardStatus } from '@/types/flashcards';
-import { spacedRepetitionService } from '@/services/spaced-repetition-service';
-import { dataService } from '@/services/data-service';
+import { spacedRepetitionService, SpacedRepetitionService } from '@/services/spaced-repetition-service';
+import { dataService, DataService } from '@/services/data-service';
 
 interface ProgressData {
   totalCards: number;
@@ -34,8 +34,8 @@ export const StudyProgress: React.FC = () => {
 
   const calculateStudyStreak = (cards: Flashcard[]): number => {
     const recentReviews = cards.filter(card => {
-      if (!card.nextReviewDate) return false;
-      const daysSinceReview = (Date.now() - card.nextReviewDate.getTime()) / (1000 * 60 * 60 * 24);
+      if (!card.nextReviewAt) return false;
+      const daysSinceReview = (Date.now() - new Date(card.nextReviewAt).getTime()) / (1000 * 60 * 60 * 24);
       return daysSinceReview <= 7;
     });
     return Math.min(recentReviews.length, 7);

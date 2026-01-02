@@ -37,15 +37,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    // Check if user is logged in on mount
-    const token = localStorage.getItem('accessToken')
-    if (token) {
-      // Verify token and get user info
-      // For now, just clear loading state
-      setIsLoading(false)
-    } else {
-      setIsLoading(false)
+    // Wrap in async function to avoid synchronous setState in effect
+    const initAuth = async () => {
+      // Check if user is logged in on mount
+      const token = localStorage.getItem('accessToken')
+      if (token) {
+        // Verify token and get user info
+        // For now, just clear loading state
+        setIsLoading(false)
+      } else {
+        setIsLoading(false)
+      }
     }
+    initAuth()
   }, [])
 
   const login = async (email: string, password: string): Promise<boolean> => {

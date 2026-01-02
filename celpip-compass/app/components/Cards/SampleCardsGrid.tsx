@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Flashcard, CardType, DifficultyLevel, CardStatus } from '@/types/flashcards';
-import { dataService } from '@/services/data-service';
+import { DataService } from '@/services/data-service';
 import { SampleCard } from './SampleCard';
 
 interface SampleCardsGridProps {
@@ -23,7 +23,7 @@ export const SampleCardsGrid: React.FC<SampleCardsGridProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    const allCards = dataService.getFlashcards();
+    const allCards = DataService.getAllCards();
     setCards(allCards);
     setFilteredCards(allCards.slice(0, limit));
   }, [limit]);
@@ -44,8 +44,8 @@ export const SampleCardsGrid: React.FC<SampleCardsGridProps> = ({
     // 搜索过滤
     if (searchQuery) {
       filtered = filtered.filter(card =>
-        card.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        card.answer.toLowerCase().includes(searchQuery.toLowerCase())
+        card.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        card.scenario.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
@@ -68,6 +68,34 @@ export const SampleCardsGrid: React.FC<SampleCardsGridProps> = ({
 
   const getDifficultyCount = (difficulty: DifficultyLevel) => {
     return cards.filter(card => card.difficulty === difficulty).length;
+  };
+
+  const getTypeLabel = (type: CardType) => {
+    switch (type) {
+      case CardType.WRITING_TASK1:
+        return '写作 Task 1';
+      case CardType.WRITING_TASK2:
+        return '写作 Task 2';
+      case CardType.SPEAKING_TASK:
+        return '口语';
+      case CardType.LISTENING_KEYWORD:
+        return '听力关键词';
+      default:
+        return type;
+    }
+  };
+
+  const getDifficultyLabel = (difficulty: DifficultyLevel) => {
+    switch (difficulty) {
+      case DifficultyLevel.CLB7:
+        return 'CLB 7';
+      case DifficultyLevel.CLB8:
+        return 'CLB 8';
+      case DifficultyLevel.CLB9:
+        return 'CLB 9';
+      default:
+        return difficulty;
+    }
   };
 
   return (
@@ -143,44 +171,44 @@ export const SampleCardsGrid: React.FC<SampleCardsGridProps> = ({
                   全部 ({cards.length})
                 </button>
                 <button
-                  onClick={() => setSelectedType(CardType.WRITING)}
+                  onClick={() => setSelectedType(CardType.WRITING_TASK1)}
                   className={`px-3 py-1 rounded-full text-sm transition-colors ${
-                    selectedType === CardType.WRITING
+                    selectedType === CardType.WRITING_TASK1
                       ? 'bg-blue-500 text-white'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
-                  写作 ({getTypeCount(CardType.WRITING)})
+                  {getTypeLabel(CardType.WRITING_TASK1)} ({getTypeCount(CardType.WRITING_TASK1)})
                 </button>
                 <button
-                  onClick={() => setSelectedType(CardType.SPEAKING)}
+                  onClick={() => setSelectedType(CardType.WRITING_TASK2)}
                   className={`px-3 py-1 rounded-full text-sm transition-colors ${
-                    selectedType === CardType.SPEAKING
+                    selectedType === CardType.WRITING_TASK2
                       ? 'bg-blue-500 text-white'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
-                  口语 ({getTypeCount(CardType.SPEAKING)})
+                  {getTypeLabel(CardType.WRITING_TASK2)} ({getTypeCount(CardType.WRITING_TASK2)})
                 </button>
                 <button
-                  onClick={() => setSelectedType(CardType.LISTENING)}
+                  onClick={() => setSelectedType(CardType.SPEAKING_TASK)}
                   className={`px-3 py-1 rounded-full text-sm transition-colors ${
-                    selectedType === CardType.LISTENING
+                    selectedType === CardType.SPEAKING_TASK
                       ? 'bg-blue-500 text-white'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
-                  听力 ({getTypeCount(CardType.LISTENING)})
+                  {getTypeLabel(CardType.SPEAKING_TASK)} ({getTypeCount(CardType.SPEAKING_TASK)})
                 </button>
                 <button
-                  onClick={() => setSelectedType(CardType.READING)}
+                  onClick={() => setSelectedType(CardType.LISTENING_KEYWORD)}
                   className={`px-3 py-1 rounded-full text-sm transition-colors ${
-                    selectedType === CardType.READING
+                    selectedType === CardType.LISTENING_KEYWORD
                       ? 'bg-blue-500 text-white'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
-                  阅读 ({getTypeCount(CardType.READING)})
+                  {getTypeLabel(CardType.LISTENING_KEYWORD)} ({getTypeCount(CardType.LISTENING_KEYWORD)})
                 </button>
               </div>
             </div>
@@ -202,34 +230,34 @@ export const SampleCardsGrid: React.FC<SampleCardsGridProps> = ({
                   全部 ({cards.length})
                 </button>
                 <button
-                  onClick={() => setSelectedDifficulty(DifficultyLevel.BEGINNER)}
+                  onClick={() => setSelectedDifficulty(DifficultyLevel.CLB7)}
                   className={`px-3 py-1 rounded-full text-sm transition-colors ${
-                    selectedDifficulty === DifficultyLevel.BEGINNER
+                    selectedDifficulty === DifficultyLevel.CLB7
                       ? 'bg-green-500 text-white'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
-                  初级 ({getDifficultyCount(DifficultyLevel.BEGINNER)})
+                  {getDifficultyLabel(DifficultyLevel.CLB7)} ({getDifficultyCount(DifficultyLevel.CLB7)})
                 </button>
                 <button
-                  onClick={() => setSelectedDifficulty(DifficultyLevel.INTERMEDIATE)}
+                  onClick={() => setSelectedDifficulty(DifficultyLevel.CLB8)}
                   className={`px-3 py-1 rounded-full text-sm transition-colors ${
-                    selectedDifficulty === DifficultyLevel.INTERMEDIATE
+                    selectedDifficulty === DifficultyLevel.CLB8
                       ? 'bg-green-500 text-white'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
-                  中级 ({getDifficultyCount(DifficultyLevel.INTERMEDIATE)})
+                  {getDifficultyLabel(DifficultyLevel.CLB8)} ({getDifficultyCount(DifficultyLevel.CLB8)})
                 </button>
                 <button
-                  onClick={() => setSelectedDifficulty(DifficultyLevel.ADVANCED)}
+                  onClick={() => setSelectedDifficulty(DifficultyLevel.CLB9)}
                   className={`px-3 py-1 rounded-full text-sm transition-colors ${
-                    selectedDifficulty === DifficultyLevel.ADVANCED
+                    selectedDifficulty === DifficultyLevel.CLB9
                       ? 'bg-green-500 text-white'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
-                  高级 ({getDifficultyCount(DifficultyLevel.ADVANCED)})
+                  {getDifficultyLabel(DifficultyLevel.CLB9)} ({getDifficultyCount(DifficultyLevel.CLB9)})
                 </button>
               </div>
             </div>
@@ -262,7 +290,7 @@ export const SampleCardsGrid: React.FC<SampleCardsGridProps> = ({
           学习建议
         </h3>
         <ul className="text-sm text-blue-800 space-y-1">
-          {dataService.getStudyRecommendations().map((recommendation, index) => (
+          {DataService.getStudyRecommendations().map((recommendation: string, index: number) => (
             <li key={index}>• {recommendation}</li>
           ))}
         </ul>

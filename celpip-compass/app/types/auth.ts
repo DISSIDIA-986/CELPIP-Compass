@@ -1,3 +1,11 @@
+// User preferences interface
+export interface UserPreferences {
+  dailyGoal?: number
+  theme?: 'light' | 'dark' | 'system'
+  language?: string
+  notifications?: boolean
+}
+
 // Authentication types
 export interface User {
   id: string
@@ -6,7 +14,7 @@ export interface User {
   password: string
   role?: string
   isActive?: boolean
-  preferences?: any
+  preferences?: UserPreferences
   createdAt: Date
   updatedAt: Date
 }
@@ -29,13 +37,14 @@ export interface AuthResponse {
   expiresIn: number
 }
 
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean
   data?: T
   message?: string
   error?: {
     code: string
     message: string
+    details?: unknown
   }
 }
 
