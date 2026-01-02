@@ -229,3 +229,4 @@ sample-data/
 # Local configuration
 local.config.js
 local.config.json
+/generated/prisma
