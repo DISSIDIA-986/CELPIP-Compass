@@ -28,10 +28,10 @@ const config: Config = {
     '^@/(.*)$': '<rootDir>/$1',
   },
 
-  // Test match patterns
+  // Test match patterns - only unit tests, E2E tests use Playwright
   testMatch: [
-    '<rootDir>/tests/**/*.test.{js,jsx,ts,tsx}',
-    '<rootDir>/tests/**/*.spec.{js,jsx,ts,tsx}',
+    '<rootDir>/tests/unit/**/*.test.{js,jsx,ts,tsx}',
+    '<rootDir>/tests/unit/**/*.spec.{js,jsx,ts,tsx}',
   ],
 
   // Module file extensions
@@ -41,6 +41,7 @@ const config: Config = {
   testPathIgnorePatterns: [
     '<rootDir>/.next/',
     '<rootDir>/node_modules/',
+    '<rootDir>/tests/e2e/',
   ],
 
   // Transform ignore patterns

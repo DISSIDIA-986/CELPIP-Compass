@@ -1,7 +1,7 @@
-import { prisma } from '../../src/lib/database'
+import { prisma } from '../../lib/database'
 
 // Mock the prisma instance to test the database layer
-jest.mock('../../src/lib/database', () => ({
+jest.mock('../../lib/database', () => ({
   prisma: {
     user: {
       findUnique: jest.fn(),
