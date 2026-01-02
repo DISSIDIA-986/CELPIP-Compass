@@ -4,22 +4,15 @@ import { JWTService } from '@/utils/jwt';
 import { prisma } from '@/lib/database';
 import { RegisterRequest, AuthResponse, ApiResponse } from '@/types/auth';
 
-// Extended register request with optional preferences
-interface RegisterRequestWithPreferences extends RegisterRequest {
-  preferences?: {
-    language?: string;
-    theme?: string;
-    notifications?: boolean;
-    studyReminder?: boolean;
-  };
-}
+// Use RegisterRequest directly - preferences are already optional in the base interface
+type RegisterRequestBody = RegisterRequest;
 
 // Create JWT service instance
 const jwtService = new JWTService();
 
 export async function POST(request: NextRequest) {
   try {
-    const body: RegisterRequestWithPreferences = await request.json();
+    const body: RegisterRequestBody = await request.json();
 
     // Validate request body
     if (!body.email || !body.password || !body.name) {

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { compare } from 'bcryptjs';
-import { jwtService, JWTService } from '@/utils/jwt';
+import { JWTService } from '@/utils/jwt';
 import { prisma } from '@/lib/database';
 import { LoginRequest, AuthResponse, ApiResponse } from '@/types/auth';
 
@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Find user by email (case-insensitive)
-    const user = prisma.user.findUnique({
+    const user = prisma.findUniqueUser({
       where: {
         email: body.email.toLowerCase()
       },
@@ -68,9 +68,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Generate tokens
-    const jwtServiceInstance = new JWTService()
     const { accessToken, refreshToken, accessTokenExpiresAt, refreshTokenExpiresAt } =
-      jwtServiceInstance.generateTokenPair(user);
+      JWTService.generateTokenPair(user);
 
     // Set secure cookie for refresh token (if rememberMe is true)
     const response = NextResponse.json<ApiResponse<AuthResponse>>(

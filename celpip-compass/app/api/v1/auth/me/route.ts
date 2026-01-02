@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth } from '@/middleware/auth';
+import { withAuth, AuthenticatedRequest } from '@/middleware/auth';
 import { prisma } from '@/lib/database';
 import { User, ApiResponse } from '@/types/auth';
 
 // Get current user information
-const getUserHandler = async (request: any) => {
+const getUserHandler = async (request: AuthenticatedRequest) => {
   try {
     // Extract token from Authorization header
     const authHeader = request.headers.get('authorization');
@@ -116,7 +116,7 @@ const getUserHandler = async (request: any) => {
 }
 
 // Update user information
-const updateUserHandler = async (request: any) => {
+const updateUserHandler = async (request: AuthenticatedRequest) => {
   try {
     // Extract token from Authorization header
     const authHeader = request.headers.get('authorization');
@@ -278,5 +278,5 @@ const updateUserHandler = async (request: any) => {
 }
 
 // Export wrapped handlers with auth middleware
-export const GET = requireAuth(getUserHandler);
-export const PUT = requireAuth(updateUserHandler);
+export const GET = withAuth(getUserHandler);
+export const PUT = withAuth(updateUserHandler);

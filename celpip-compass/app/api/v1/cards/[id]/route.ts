@@ -1,24 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { CardType, DifficultyLevel, CardStatus, Flashcard } from '@/types/flashcards';
+import { z } from 'zod';
+import { DifficultyLevel, CardStatus, Flashcard } from '@/types/flashcards';
 import { ApiResponse } from '@/types/auth';
-
-// Simple mock data
-const mockFlashcards: Flashcard[] = [
-  {
-    id: '1',
-    type: CardType.WRITING,
-    question: 'Sample writing question',
-    answer: 'Sample answer',
-    explanation: 'This is a sample explanation.',
-    tags: ['sample', 'writing'],
-    difficulty: DifficultyLevel.INTERMEDIATE,
-    status: CardStatus.LEARNING,
-    reviewCount: 1,
-    correctCount: 0,
-    createdAt: new Date(),
-    updatedAt: new Date()
-  }
-];
+import { cardService } from '@/services/card-service';
 
 export async function GET(
   request: NextRequest,
@@ -26,9 +10,11 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const card = mockFlashcards.find(c => c.id === id);
 
-    if (!card) {
+    // Use cardService to get card by ID (database with mock fallback)
+    const result = await cardService.getCardById(id);
+
+    if (!result.success || !result.data) {
       const response: ApiResponse<never> = {
         success: false,
         error: {
@@ -39,13 +25,17 @@ export async function GET(
       return NextResponse.json(response, { status: 404 });
     }
 
-    const response: ApiResponse<Flashcard> = {
+    const response: ApiResponse<Flashcard & { source: 'database' | 'mock' }> = {
       success: true,
-      data: card
+      data: {
+        ...result.data,
+        source: result.source
+      }
     };
 
     return NextResponse.json(response, { status: 200 });
-  } catch {
+  } catch (error) {
+    console.error('Card GET error:', error);
     const response: ApiResponse<never> = {
       success: false,
       error: {
@@ -57,6 +47,24 @@ export async function GET(
   }
 }
 
+// Update schema (Zod 4: z.enum() for native enums, z.record() with key type)
+const UpdateCardSchema = z.object({
+  title: z.string().min(1).optional(),
+  scenario: z.string().optional(),
+  tone: z.string().optional(),
+  difficulty: z.enum(DifficultyLevel).optional(),
+  status: z.enum(CardStatus).optional(),
+  essentialPhrases: z.record(z.string(), z.array(z.string())).optional(),
+  upgrades: z.object({
+    vocabulary: z.record(z.string(), z.array(z.string())),
+    structure: z.record(z.string(), z.string()).optional()
+  }).optional(),
+  practice: z.object({
+    question: z.string(),
+    keyPoints: z.array(z.string())
+  }).optional()
+}).partial();
+
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -64,36 +72,54 @@ export async function PUT(
   try {
     const { id } = await params;
     const body = await request.json();
-    const cardIndex = mockFlashcards.findIndex(c => c.id === id);
 
-    if (cardIndex === -1) {
+    // Validate update data
+    const validatedData = UpdateCardSchema.parse(body);
+
+    // Use cardService to update card (database with mock fallback)
+    const result = await cardService.updateCard(id, {
+      ...(validatedData.title !== undefined && { title: validatedData.title }),
+      ...(validatedData.scenario !== undefined && { scenario: validatedData.scenario }),
+      ...(validatedData.tone !== undefined && { tone: validatedData.tone }),
+      ...(validatedData.difficulty !== undefined && { difficulty: validatedData.difficulty }),
+      ...(validatedData.status !== undefined && { status: validatedData.status }),
+      ...(validatedData.essentialPhrases !== undefined && { essentialPhrases: validatedData.essentialPhrases as Flashcard['essentialPhrases'] }),
+      ...(validatedData.upgrades !== undefined && { upgrades: validatedData.upgrades as Flashcard['upgrades'] }),
+      ...(validatedData.practice !== undefined && { practice: validatedData.practice })
+    });
+
+    if (!result.success || !result.data) {
       const response: ApiResponse<never> = {
         success: false,
         error: {
-          code: 'CARD_NOT_FOUND',
-          message: `Card with ID ${id} not found`
+          code: result.error === 'Card not found' ? 'CARD_NOT_FOUND' : 'UPDATE_ERROR',
+          message: result.error || `Failed to update card with ID ${id}`
         }
       };
-      return NextResponse.json(response, { status: 404 });
+      return NextResponse.json(response, { status: result.error === 'Card not found' ? 404 : 500 });
     }
-
-    // Simple update
-    const updatedCard: Flashcard = {
-      ...mockFlashcards[cardIndex],
-      ...body,
-      updatedAt: new Date()
-    };
-
-    mockFlashcards[cardIndex] = updatedCard;
 
     const response: ApiResponse<Flashcard> = {
       success: true,
-      data: updatedCard,
+      data: result.data,
       message: 'Card updated successfully'
     };
 
     return NextResponse.json(response, { status: 200 });
-  } catch {
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      const response: ApiResponse<never> = {
+        success: false,
+        error: {
+          code: 'INVALID_REQUEST_BODY',
+          message: 'Invalid update data',
+          details: error.issues
+        }
+      };
+      return NextResponse.json(response, { status: 400 });
+    }
+
+    console.error('Card PUT error:', error);
     const response: ApiResponse<never> = {
       success: false,
       error: {
@@ -111,30 +137,30 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
-    const cardIndex = mockFlashcards.findIndex(c => c.id === id);
 
-    if (cardIndex === -1) {
+    // Use cardService to delete card (database with mock fallback)
+    const result = await cardService.deleteCard(id);
+
+    if (!result.success) {
       const response: ApiResponse<never> = {
         success: false,
         error: {
-          code: 'CARD_NOT_FOUND',
-          message: `Card with ID ${id} not found`
+          code: result.error === 'Card not found' ? 'CARD_NOT_FOUND' : 'DELETE_ERROR',
+          message: result.error || `Failed to delete card with ID ${id}`
         }
       };
-      return NextResponse.json(response, { status: 404 });
+      return NextResponse.json(response, { status: result.error === 'Card not found' ? 404 : 500 });
     }
 
-    // Remove the card
-    mockFlashcards.splice(cardIndex, 1);
-
-    const response: ApiResponse<{ deleted: boolean }> = {
+    const response: ApiResponse<{ deleted: boolean; id: string }> = {
       success: true,
-      data: { deleted: true },
+      data: { deleted: true, id },
       message: 'Card deleted successfully'
     };
 
     return NextResponse.json(response, { status: 200 });
-  } catch {
+  } catch (error) {
+    console.error('Card DELETE error:', error);
     const response: ApiResponse<never> = {
       success: false,
       error: {
