@@ -1,0 +1,142 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// User model for authentication and user management
+model User {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  name        String
+  password    String
+  role        Role     @default(STUDENT)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // User preferences
+  preferences UserPreferences?
+
+  // Relations
+  cards       Card[]
+  progress    Progress[]
+  reviews     Review[]
+
+  @@map("users")
+}
+
+// User preferences model
+model UserPreferences {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  language    String   @default("en")
+  theme       String   @default("light")
+  notifications Boolean @default(true)
+  studyReminder Boolean @default(true)
+
+  @@map("user_preferences")
+}
+
+// Card model for flashcards and learning content
+model Card {
+  id              String      @id @default(cuid())
+  userId          String
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Content
+  question        String
+  answer          String
+  example         String?
+  translation     String?
+  audioUrl        String?
+  imageUrl        String?
+
+  // Metadata
+  difficulty      Difficulty  @default(MEDIUM)
+  category        String
+  tags            String[]
+  isPublic        Boolean     @default(false)
+
+  // SM2 Algorithm fields
+  easeFactor      Float       @default(2.5)
+  interval       Int         @default(1)
+  repetitions    Int         @default(0)
+  nextReviewDate  DateTime?
+  lastReviewDate  DateTime?
+  reviewCount    Int         @default(0)
+  quality        Int?
+
+  // Timestamps
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  // Relations
+  progress        Progress[]
+  reviews         Review[]
+
+  @@map("cards")
+}
+
+// Progress tracking model
+model Progress {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cardId    String
+  card      Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  // Progress metrics
+  quality   Int      // Quality rating (0-5)
+  interval  Int      // Days until next review
+  easeFactor Float    // SM2 ease factor
+
+  // Timestamps
+  createdAt DateTime @default(now())
+
+  @@unique([userId, cardId])
+  @@map("progress")
+}
+
+// Review history model
+model Review {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cardId    String
+  card      Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  // Review details
+  quality   Int      // Quality rating (0-5)
+  responseTime Int?  // Response time in milliseconds
+
+  // Timestamps
+  createdAt DateTime @default(now())
+
+  @@map("reviews")
+}
+
+
+// Enums
+enum Role {
+  STUDENT
+  TEACHER
+  ADMIN
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
