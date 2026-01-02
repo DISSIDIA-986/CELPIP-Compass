@@ -2,100 +2,56 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { CardType, DifficultyLevel, CardStatus, Flashcard } from '@/types/flashcards';
 import { ApiResponse } from '@/types/auth';
+import { cardService } from '@/services/card-service';
 
-// Simple mock data
-const mockFlashcards: Flashcard[] = [
-  {
-    id: '1',
-    type: CardType.WRITING,
-    question: 'Write a formal email to your landlord',
-    answer: 'Dear Landlord, I hope this message finds you well...',
-    explanation: 'Formal email with proper structure and tone.',
-    tags: ['formal', 'email', 'landlord'],
-    difficulty: DifficultyLevel.INTERMEDIATE,
-    status: CardStatus.LEARNING,
-    reviewCount: 2,
-    correctCount: 1,
-    createdAt: new Date('2024-01-01'),
-    updatedAt: new Date(),
-    nextReviewDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000)
-  },
-  {
-    id: '2',
-    type: CardType.LISTENING,
-    question: 'Listen to conversation about apartment hunting',
-    answer: 'The conversation discusses important factors when choosing an apartment.',
-    explanation: 'Listening comprehension for everyday conversations.',
-    tags: ['listening', 'conversation', 'apartment'],
-    difficulty: DifficultyLevel.BEGINNER,
-    status: CardStatus.REVIEW,
-    reviewCount: 4,
-    correctCount: 3,
-    createdAt: new Date('2024-01-02'),
-    updatedAt: new Date()
-  }
-];
-
-// Query parameters schema
+// Query parameters schema (Zod 4: z.enum() replaces z.nativeEnum())
 const QuerySchema = z.object({
-  type: z.enum(Object.values(CardType)).optional(),
-  difficulty: z.enum(Object.values(DifficultyLevel)).optional(),
-  status: z.enum(Object.values(CardStatus)).optional(),
+  type: z.enum(CardType).optional(),
+  difficulty: z.enum(DifficultyLevel).optional(),
+  status: z.enum(CardStatus).optional(),
   tags: z.array(z.string()).optional(),
   search: z.string().optional(),
-  limit: z.number().min(1).max(100).default(20),
-  offset: z.number().min(0).default(0)
+  limit: z.coerce.number().min(1).max(100).default(20),
+  offset: z.coerce.number().min(0).default(0)
 });
 
 export async function GET(request: NextRequest) {
   try {
     // Parse query parameters
     const searchParams = request.nextUrl.searchParams;
-    const query = QuerySchema.parse({
-      type: searchParams.get('type') as any,
-      difficulty: searchParams.get('difficulty') as any,
-      status: searchParams.get('status') as any,
-      tags: searchParams.get('tags')?.split(','),
-      search: searchParams.get('search'),
-      limit: parseInt(searchParams.get('limit') || '20'),
-      offset: parseInt(searchParams.get('offset') || '0')
+    const rawQuery = {
+      type: searchParams.get('type') || undefined,
+      difficulty: searchParams.get('difficulty') || undefined,
+      status: searchParams.get('status') || undefined,
+      tags: searchParams.get('tags')?.split(',').filter(Boolean),
+      search: searchParams.get('search') || undefined,
+      limit: searchParams.get('limit') || '20',
+      offset: searchParams.get('offset') || '0'
+    };
+
+    const query = QuerySchema.parse(rawQuery);
+
+    // Use cardService to get cards (database with mock fallback)
+    const result = await cardService.getCards({
+      type: query.type,
+      difficulty: query.difficulty,
+      status: query.status,
+      tags: query.tags,
+      search: query.search,
+      limit: query.limit,
+      offset: query.offset
     });
 
-    // Filter cards
-    let filteredCards = [...mockFlashcards];
-
-    if (query.type) {
-      filteredCards = filteredCards.filter(card => card.type === query.type);
+    if (!result.success || !result.data) {
+      const response: ApiResponse<never> = {
+        success: false,
+        error: {
+          code: 'FETCH_ERROR',
+          message: result.error || 'Failed to fetch cards'
+        }
+      };
+      return NextResponse.json(response, { status: 500 });
     }
-
-    if (query.difficulty) {
-      filteredCards = filteredCards.filter(card => card.difficulty === query.difficulty);
-    }
-
-    if (query.status) {
-      filteredCards = filteredCards.filter(card => card.status === query.status);
-    }
-
-    if (query.tags && query.tags.length > 0) {
-      filteredCards = filteredCards.filter(card =>
-        query.tags!.some(tag => card.tags.includes(tag))
-      );
-    }
-
-    if (query.search) {
-      const searchTerm = query.search.toLowerCase();
-      filteredCards = filteredCards.filter(card =>
-        card.question.toLowerCase().includes(searchTerm) ||
-        card.answer.toLowerCase().includes(searchTerm) ||
-        card.explanation?.toLowerCase().includes(searchTerm)
-      );
-    }
-
-    // Pagination
-    const total = filteredCards.length;
-    const startIndex = query.offset;
-    const endIndex = startIndex + query.limit;
-    const paginatedCards = filteredCards.slice(startIndex, endIndex);
 
     const response: ApiResponse<{
       cards: Flashcard[];
@@ -103,14 +59,12 @@ export async function GET(request: NextRequest) {
       page: number;
       pageSize: number;
       totalPages: number;
+      source: 'database' | 'mock';
     }> = {
       success: true,
       data: {
-        cards: paginatedCards,
-        total,
-        page: Math.floor(startIndex / query.limit) + 1,
-        pageSize: query.limit,
-        totalPages: Math.ceil(total / query.limit)
+        ...result.data,
+        source: result.source
       }
     };
 
@@ -121,12 +75,14 @@ export async function GET(request: NextRequest) {
         success: false,
         error: {
           code: 'INVALID_QUERY_PARAMS',
-          message: 'Invalid query parameters'
+          message: 'Invalid query parameters',
+          details: error.issues
         }
       };
       return NextResponse.json(response, { status: 400 });
     }
 
+    console.error('Cards GET error:', error);
     const response: ApiResponse<never> = {
       success: false,
       error: {
@@ -142,39 +98,58 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    // Simple validation
+    // Validation schema for creating new card (Zod 4: z.enum() for native enums)
     const cardSchema = z.object({
-      type: z.nativeEnum(CardType),
-      question: z.string().min(1),
-      answer: z.string().min(1),
-      explanation: z.string().optional(),
-      tags: z.array(z.string()).default([]),
-      difficulty: z.nativeEnum(DifficultyLevel).default(DifficultyLevel.INTERMEDIATE)
+      type: z.enum(CardType),
+      title: z.string().min(1),
+      scenario: z.string().min(1),
+      tone: z.string().optional(),
+      difficulty: z.enum(DifficultyLevel).default(DifficultyLevel.CLB8),
+      essentialPhrases: z.record(z.string(), z.array(z.string())),
+      upgrades: z.object({
+        vocabulary: z.record(z.string(), z.array(z.string())),
+        structure: z.record(z.string(), z.string()).optional()
+      }),
+      practice: z.object({
+        question: z.string(),
+        keyPoints: z.array(z.string())
+      }).optional()
     });
 
     const validatedData = cardSchema.parse(body);
 
-    // Create new card
-    const newCard: Flashcard = {
-      id: Math.random().toString(36).substr(2, 9),
+    // Use cardService to create card (database with mock fallback)
+    const result = await cardService.createCard({
       type: validatedData.type,
-      question: validatedData.question,
-      answer: validatedData.answer,
-      explanation: validatedData.explanation,
-      tags: validatedData.tags,
+      title: validatedData.title,
+      scenario: validatedData.scenario,
+      tone: validatedData.tone,
       difficulty: validatedData.difficulty,
       status: CardStatus.NEW,
+      essentialPhrases: validatedData.essentialPhrases,
+      upgrades: validatedData.upgrades,
+      practice: validatedData.practice,
       reviewCount: 0,
       correctCount: 0,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
+      averageQualityScore: 0,
+      totalStudyTime: 0,
+      isDeleted: false
+    });
 
-    mockFlashcards.push(newCard);
+    if (!result.success || !result.data) {
+      const response: ApiResponse<never> = {
+        success: false,
+        error: {
+          code: 'CREATE_ERROR',
+          message: result.error || 'Failed to create card'
+        }
+      };
+      return NextResponse.json(response, { status: result.source === 'mock' ? 503 : 500 });
+    }
 
     const response: ApiResponse<Flashcard> = {
       success: true,
-      data: newCard,
+      data: result.data,
       message: 'Card created successfully'
     };
 
@@ -185,12 +160,14 @@ export async function POST(request: NextRequest) {
         success: false,
         error: {
           code: 'INVALID_REQUEST_BODY',
-          message: 'Invalid request body'
+          message: 'Invalid request body',
+          details: error.issues
         }
       };
       return NextResponse.json(response, { status: 400 });
     }
 
+    console.error('Cards POST error:', error);
     const response: ApiResponse<never> = {
       success: false,
       error: {

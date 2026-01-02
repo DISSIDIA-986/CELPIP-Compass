@@ -1,30 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { CardType, DifficultyLevel, CardStatus, Flashcard } from '@/types/flashcards';
+import { Flashcard } from '@/types/flashcards';
 import { ApiResponse } from '@/types/auth';
-
-// Simple mock data
-const sampleFlashcards: Flashcard[] = [
-  {
-    id: '1',
-    type: CardType.WRITING,
-    question: 'Write a formal email to your landlord',
-    answer: 'Dear Landlord, I hope this message finds you well...',
-    explanation: 'Formal email with proper structure and tone.',
-    tags: ['formal', 'email', 'landlord'],
-    difficulty: DifficultyLevel.INTERMEDIATE,
-    status: CardStatus.LEARNING,
-    reviewCount: 1,
-    correctCount: 0,
-    createdAt: new Date(),
-    updatedAt: new Date()
-  }
-];
-
-const aiPrompts = [
-  'Generate a CELPIP writing task about apartment rental',
-  'Create a listening comprehension about job interviews',
-  'Design a speaking prompt for describing a neighborhood'
-];
+import { sampleFlashcards, aiPrompts } from '@/data/sample-cards';
 
 // GET /api/v1/data/sample-cards - 获取示例卡片数据
 export async function GET(request: NextRequest) {
@@ -34,7 +11,7 @@ export async function GET(request: NextRequest) {
     const limit = searchParams.get('limit') ? parseInt(searchParams.get('limit')!) : 20;
 
     // 根据类型过滤卡片
-    let filteredCards = sampleFlashcards;
+    let filteredCards: Flashcard[] = sampleFlashcards;
     if (type && type !== 'all') {
       filteredCards = sampleFlashcards.filter(card => card.type === type);
     }
@@ -43,7 +20,7 @@ export async function GET(request: NextRequest) {
     const cards = filteredCards.slice(0, limit);
 
     const response: ApiResponse<{
-      cards: typeof cards;
+      cards: Flashcard[];
       prompts: typeof aiPrompts;
       total: number;
     }> = {
