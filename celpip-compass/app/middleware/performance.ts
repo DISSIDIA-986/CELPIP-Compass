@@ -13,13 +13,18 @@ export async function middleware(request: NextRequest) {
     },
   });
 
+  // Get client IP from headers (Next.js doesn't have request.ip)
+  const clientIp = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+    || request.headers.get('x-real-ip')
+    || 'unknown';
+
   // Log request details
   logger.http('Incoming request', {
     requestId,
     method: request.method,
     url: request.url,
     userAgent: request.headers.get('user-agent'),
-    ip: request.ip,
+    ip: clientIp,
   });
 
   // Add performance monitoring
@@ -31,7 +36,6 @@ export async function middleware(request: NextRequest) {
   response.headers.set('X-XSS-Protection', '1; mode=block');
 
   // Rate limiting check (simplified)
-  const clientIp = request.ip || request.headers.get('x-forwarded-for') || 'unknown';
   if (await isRateLimited(clientIp)) {
     logger.warn('Rate limit exceeded', { requestId, ip: clientIp });
     return new NextResponse('Too Many Requests', { status: 429 });
@@ -49,21 +53,24 @@ function generateRequestId(): string {
   return Math.random().toString(36).substr(2, 9);
 }
 
+// Type-safe global rate limit store
+const rateLimitStore: Record<string, number> = {};
+
 async function isRateLimited(ip: string): Promise<boolean> {
   // In a real implementation, this would check Redis or similar
   // For now, we'll use a simple in-memory counter
   const rateLimitKey = `rate_limit:${ip}`;
-  const currentCount = (global as any)[rateLimitKey] || 0;
+  const currentCount = rateLimitStore[rateLimitKey] || 0;
 
   if (currentCount > 100) { // 100 requests per window
     return true;
   }
 
-  (global as any)[rateLimitKey] = currentCount + 1;
+  rateLimitStore[rateLimitKey] = currentCount + 1;
 
   // Reset counter every 15 minutes
   setTimeout(() => {
-    (global as any)[rateLimitKey] = 0;
+    rateLimitStore[rateLimitKey] = 0;
   }, 15 * 60 * 1000);
 
   return false;

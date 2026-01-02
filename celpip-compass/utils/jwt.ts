@@ -108,4 +108,20 @@ export class JWTService {
       refreshTokenExpiresAt
     };
   }
+
+  // 实例方法别名 - 用于向后兼容
+  generateTokenPair(user: User) {
+    return JWTService.generateTokenPair(user);
+  }
+
+  verifyAccessToken(token: string) {
+    return JWTService.verifyAccessToken(token);
+  }
+
+  verifyRefreshToken(token: string) {
+    return JWTService.verifyRefreshToken(token);
+  }
 }
+
+// 导出实例用于向后兼容
+export const jwtService = new JWTService();

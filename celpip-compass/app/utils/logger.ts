@@ -84,12 +84,12 @@ export const stream = {
 };
 
 // Helper function for structured logging
-export const structuredLog = (level: string, message: string, meta?: any) => {
+export const structuredLog = (level: string, message: string, meta?: Record<string, unknown>) => {
   logger.log(level, message, meta);
 };
 
 // Error logging helper
-export const logError = (error: Error, context?: any) => {
+export const logError = (error: Error, context?: Record<string, unknown>) => {
   logger.error('Application error', {
     error: error.message,
     stack: error.stack,

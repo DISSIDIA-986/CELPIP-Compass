@@ -34,11 +34,11 @@ export class PerformanceMonitor {
     if (typeof window === 'undefined' || !window.performance) return
 
     // Get navigation timing metrics
-    const navigation = performance.getEntriesByType('navigation')[0]
+    const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined
     if (navigation) {
-      this.metrics.navigationStart = (navigation as any).fetchStart
-      this.metrics.loadEventEnd = (navigation as any).loadEventEnd
-      this.metrics.domInteractive = (navigation as any).domInteractive
+      this.metrics.navigationStart = navigation.fetchStart
+      this.metrics.loadEventEnd = navigation.loadEventEnd
+      this.metrics.domInteractive = navigation.domInteractive
     }
 
     // Get paint timing metrics
@@ -65,7 +65,7 @@ export class PerformanceMonitor {
         const clsObserver = new PerformanceObserver((list) => {
           for (const entry of list.getEntries()) {
             if ('value' in entry) {
-              this.metrics.cumulativeLayoutShift += (entry as any).value
+              this.metrics.cumulativeLayoutShift += (entry as PerformanceEntry & { value: number }).value
             }
           }
         })
@@ -76,7 +76,7 @@ export class PerformanceMonitor {
         const fidObserver = new PerformanceObserver((list) => {
           const firstInput = list.getEntries()[0]
           if (firstInput && 'processingStart' in firstInput) {
-            this.metrics.firstInputDelay = (firstInput as any).processingStart - firstInput.startTime
+            this.metrics.firstInputDelay = (firstInput as PerformanceEntry & { processingStart: number }).processingStart - firstInput.startTime
           }
         })
 
@@ -123,10 +123,17 @@ export class PerformanceMonitor {
 // Create a global instance
 export const performanceMonitor = new PerformanceMonitor()
 
+// Chrome-specific memory interface
+interface PerformanceMemory {
+  usedJSHeapSize: number
+  totalJSHeapSize: number
+  jsHeapSizeLimit: number
+}
+
 // Bundle size analyzer
 export const analyzeBundleSize = () => {
   if (typeof window !== 'undefined' && window.performance && 'memory' in performance) {
-    const memory = (performance as any).memory
+    const memory = (performance as Performance & { memory?: PerformanceMemory }).memory
     if (memory) {
       return {
         used: memory.usedJSHeapSize,
@@ -180,26 +187,26 @@ export const optimizeImages = () => {
 }
 
 // Debounce utility for scroll events
-export const debounce = <T extends (...args: any[]) => void>(
+export const debounce = <T extends (...args: unknown[]) => void>(
   func: T,
   delay: number
 ): T => {
   let timeoutId: NodeJS.Timeout
-  return ((...args: any[]) => {
+  return ((...args: unknown[]) => {
     clearTimeout(timeoutId)
-    timeoutId = setTimeout(() => func.apply(null, args), delay)
+    timeoutId = setTimeout(() => func(...args), delay)
   }) as T
 }
 
 // Throttle utility for resize events
-export const throttle = <T extends (...args: any[]) => void>(
+export const throttle = <T extends (...args: unknown[]) => void>(
   func: T,
   limit: number
 ): T => {
   let inThrottle: boolean
-  return ((...args: any[]) => {
+  return ((...args: unknown[]) => {
     if (!inThrottle) {
-      func.apply(null, args)
+      func(...args)
       inThrottle = true
       setTimeout(() => inThrottle = false, limit)
     }

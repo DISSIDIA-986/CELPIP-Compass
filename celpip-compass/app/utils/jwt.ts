@@ -52,7 +52,7 @@ export class JWTService {
     try {
       const decoded = jwt.verify(token, this.secret) as TokenPayload
       return decoded
-    } catch (error) {
+    } catch {
       return null
     }
   }
@@ -61,12 +61,12 @@ export class JWTService {
     try {
       const decoded = jwt.verify(token, this.refreshSecret) as TokenPayload
       return decoded
-    } catch (error) {
+    } catch {
       return null
     }
   }
 
-  generateTokenPair(user: any) {
+  generateTokenPair(user: { id: string }) {
     const accessToken = this.generateAccessToken(user.id)
     const refreshToken = this.generateRefreshToken(user.id)
 

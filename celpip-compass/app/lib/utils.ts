@@ -6,25 +6,25 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 // Performance utilities
-export const debounce = <T extends (...args: any[]) => void>(
+export const debounce = <T extends (...args: unknown[]) => void>(
   func: T,
   delay: number
 ): T => {
   let timeoutId: NodeJS.Timeout
-  return ((...args: any[]) => {
+  return ((...args: unknown[]) => {
     clearTimeout(timeoutId)
-    timeoutId = setTimeout(() => func.apply(null, args), delay)
+    timeoutId = setTimeout(() => func(...args), delay)
   }) as T
 }
 
-export const throttle = <T extends (...args: any[]) => void>(
+export const throttle = <T extends (...args: unknown[]) => void>(
   func: T,
   limit: number
 ): T => {
   let inThrottle: boolean
-  return ((...args: any[]) => {
+  return ((...args: unknown[]) => {
     if (!inThrottle) {
-      func.apply(null, args)
+      func(...args)
       inThrottle = true
       setTimeout(() => inThrottle = false, limit)
     }
