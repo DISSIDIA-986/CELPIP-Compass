@@ -5,6 +5,10 @@ on:
     branches: [ main ]
   workflow_dispatch:  # Allow manual deployment
 
+defaults:
+  run:
+    working-directory: ./celpip-compass
+
 jobs:
   deploy:
     name: Deploy Application
@@ -20,35 +24,28 @@ jobs:
         with:
           node-version: '20.x'
           cache: 'npm'
-          cache-dependency-path: '**/package-lock.json'
+          cache-dependency-path: 'celpip-compass/package-lock.json'
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Build Docker image
-        run: |
-          docker build -t celpip-compass:latest .
-
-      - name: Deploy to Render (if configured)
-        if: env.RENDER_SERVICE_NAME != ''
-        env:
-          RENDER_SERVICE_NAME: ${{ secrets.RENDER_SERVICE_NAME }}
-        run: |
-          echo "Deploying to Render service: $RENDER_SERVICE_NAME"
-          # Add Render deployment logic here
+      - name: Build application
+        run: npm run build
 
       - name: Deploy to Vercel (if configured)
-        if: env.VERCEL_TOKEN != ''
+        if: ${{ secrets.VERCEL_TOKEN != '' }}
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
           echo "Deploying to Vercel..."
-          npx vercel --prod
+          npx vercel --prod --token=$VERCEL_TOKEN
 
       - name: Run post-deployment checks
         run: |
           echo "Running post-deployment checks..."
-          # Add health check and validation logic
+          echo "Build completed successfully!"
 
   notify:
     name: Send Notification
