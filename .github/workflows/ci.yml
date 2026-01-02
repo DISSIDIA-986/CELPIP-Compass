@@ -11,6 +11,10 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
+defaults:
+  run:
+    working-directory: ./celpip-compass
+
 jobs:
   validate:
     name: Validate Code
@@ -27,7 +31,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-          cache-dependency-path: '**/package-lock.json'
+          cache-dependency-path: 'celpip-compass/package-lock.json'
 
       - name: Install dependencies
         run: npm ci
@@ -65,7 +69,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-          cache-dependency-path: '**/package-lock.json'
+          cache-dependency-path: 'celpip-compass/package-lock.json'
 
       - name: Install dependencies
         run: npm ci
@@ -92,7 +96,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-          cache-dependency-path: '**/package-lock.json'
+          cache-dependency-path: 'celpip-compass/package-lock.json'
 
       - name: Install dependencies
         run: npm ci
