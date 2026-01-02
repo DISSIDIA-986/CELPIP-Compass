@@ -53,7 +53,7 @@ export function middleware(request: NextRequest) {
 
   // Rate limiting for auth endpoints
   if (pathname.startsWith('/api/auth/')) {
-    const ip = (request as any).ip || request.headers.get('x-forwarded-for') || 'unknown'
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || request.headers.get('x-real-ip') || 'unknown'
 
     if (!checkRateLimit(ip)) {
       return new NextResponse('Too Many Requests', {
