@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Flashcard, CardType, CardStatus } from '@/types/flashcards';
 
 interface SampleCardProps {
@@ -14,6 +14,7 @@ export const SampleCard: React.FC<SampleCardProps> = ({
   onClick,
   showDetails = false
 }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
   const getCardTypeLabel = (type: CardType) => {
     switch (type) {
       case CardType.WRITING_TASK1:
@@ -126,9 +127,76 @@ export const SampleCard: React.FC<SampleCardProps> = ({
 
       {/* 查看详情按钮 */}
       {showDetails && (
-        <button className="mt-3 w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition-colors">
-          查看详情
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsExpanded(!isExpanded);
+          }}
+          className="mt-3 w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition-colors"
+        >
+          {isExpanded ? '收起详情' : '查看详情'}
         </button>
+      )}
+
+      {/* 展开的详细内容 */}
+      {isExpanded && (
+        <div className="mt-4 pt-4 border-t border-gray-200 space-y-4">
+          {/* 场景描述 */}
+          <div>
+            <h4 className="text-sm font-semibold text-gray-700 mb-2">场景描述</h4>
+            <p className="text-sm text-gray-600">{card.scenario}</p>
+          </div>
+
+          {/* 核心短语 */}
+          {card.essentialPhrases && Object.keys(card.essentialPhrases).length > 0 && (
+            <div>
+              <h4 className="text-sm font-semibold text-gray-700 mb-2">核心短语</h4>
+              <div className="space-y-2">
+                {Object.entries(card.essentialPhrases).map(([key, phrases]) => (
+                  <div key={key} className="bg-gray-50 p-2 rounded">
+                    <span className="text-xs font-medium text-gray-500 uppercase">{key}</span>
+                    <ul className="mt-1 space-y-1">
+                      {(phrases as string[]).slice(0, 3).map((phrase, idx) => (
+                        <li key={idx} className="text-sm text-gray-700">• {phrase}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* 词汇升级 */}
+          {card.upgrades?.vocabulary && Object.keys(card.upgrades.vocabulary).length > 0 && (
+            <div>
+              <h4 className="text-sm font-semibold text-gray-700 mb-2">词汇升级</h4>
+              <div className="flex flex-wrap gap-2">
+                {Object.entries(card.upgrades.vocabulary).slice(0, 4).map(([basic, advanced]) => (
+                  <div key={basic} className="bg-blue-50 px-2 py-1 rounded text-xs">
+                    <span className="text-gray-500">{basic}</span>
+                    <span className="text-gray-400 mx-1">→</span>
+                    <span className="text-blue-600">{(advanced as string[])[0]}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* 练习要点 */}
+          {card.practice?.keyPoints && card.practice.keyPoints.length > 0 && (
+            <div>
+              <h4 className="text-sm font-semibold text-gray-700 mb-2">练习要点</h4>
+              <ul className="space-y-1">
+                {card.practice.keyPoints.map((point, idx) => (
+                  <li key={idx} className="text-sm text-gray-600 flex items-start">
+                    <span className="text-green-500 mr-2">✓</span>
+                    {point}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
       )}
 
       {/* 卡片类型标签 */}
