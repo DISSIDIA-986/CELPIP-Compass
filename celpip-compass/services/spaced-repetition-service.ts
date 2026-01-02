@@ -326,4 +326,52 @@ export class SpacedRepetitionService {
       }))
     };
   }
+
+  /**
+   * 更新卡片学习进度（实例方法包装）
+   */
+  updateCardProgress(card: Flashcard, quality: number) {
+    const metadata = SpacedRepetitionService.calculateNextReview(card, quality);
+    const status = SpacedRepetitionService.updateCardStatus(card, quality);
+
+    return {
+      updatedCard: {
+        ...card,
+        metadata,
+        status,
+        nextReviewAt: metadata.dueDate
+      },
+      progress: {
+        nextReviewDate: metadata.dueDate,
+        interval: metadata.interval
+      }
+    };
+  }
+
+  /**
+   * 获取学习统计（实例方法包装）
+   */
+  getLearningStats(cards: Flashcard[]) {
+    const stats = SpacedRepetitionService.getLearningStats(cards);
+    return {
+      total: stats.total,
+      masteredCards: stats.mastered,
+      learningCards: stats.learning,
+      reviewCards: stats.review,
+      newCards: stats.newCards,
+      averageAccuracy: stats.avgAccuracy,
+      dueToday: stats.dueToday,
+      overdue: stats.overdue
+    };
+  }
+
+  /**
+   * 获取需要复习的卡片（实例方法包装）
+   */
+  getCardsForReview(cards: Flashcard[], limit: number = 20, includeNew: boolean = true) {
+    return SpacedRepetitionService.getCardsForReview(cards, limit, includeNew);
+  }
 }
+
+// 导出实例用于向后兼容
+export const spacedRepetitionService = new SpacedRepetitionService();

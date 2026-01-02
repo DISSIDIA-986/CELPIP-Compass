@@ -151,4 +151,16 @@ export class DataService {
       sampleFlashcards[index] = updatedCard;
     }
   }
+
+  // 实例方法别名 - 用于向后兼容
+  getFlashcards(): Flashcard[] {
+    return DataService.getAllCards();
+  }
+
+  updateFlashcard(id: string, updatedCard: Flashcard): void {
+    DataService.updateCard(updatedCard);
+  }
 }
+
+// 导出实例用于向后兼容
+export const dataService = new DataService();
