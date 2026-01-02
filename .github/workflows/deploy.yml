@@ -27,7 +27,7 @@ jobs:
           cache-dependency-path: 'celpip-compass/package-lock.json'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install --include=optional
 
       - name: Build application
         run: npm run build

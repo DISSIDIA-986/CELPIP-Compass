@@ -34,7 +34,7 @@ jobs:
           cache-dependency-path: 'celpip-compass/package-lock.json'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install --include=optional
 
       - name: Run TypeScript check
         run: npx tsc --noEmit
@@ -74,7 +74,7 @@ jobs:
           cache-dependency-path: 'celpip-compass/package-lock.json'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install --include=optional
 
       - name: Run ${{ matrix.test-type }} tests
         run: npm run test:${{ matrix.test-type }}
@@ -102,7 +102,7 @@ jobs:
           cache-dependency-path: 'celpip-compass/package-lock.json'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install --include=optional
 
       - name: Build application
         run: npm run build
@@ -202,11 +202,11 @@ jobs:
           inputs: package-lock.json
 
       - name: Run CodeQL analysis
-        uses: github/codeql-action/init@v2
+        uses: github/codeql-action/init@v3
         with:
-          languages: ${{ matrix.language }}
+          languages: javascript
 
       - name: Perform vulnerability analysis
-        uses: github/codeql-action/perform-analysis@v2
+        uses: github/codeql-action/analyze@v3
         with:
           category: security
