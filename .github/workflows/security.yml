@@ -30,7 +30,7 @@ jobs:
           cache-dependency-path: 'celpip-compass/package-lock.json'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install --include=optional
 
       - name: Run npm audit
         run: npm audit --audit-level moderate
@@ -78,12 +78,12 @@ jobs:
           node-version: '20.x'
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
+        uses: github/codeql-action/init@v3
         with:
           languages: ${{ matrix.language }}
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/perform-analysis@v2
+        uses: github/codeql-action/analyze@v3
         with:
           category: security
 
