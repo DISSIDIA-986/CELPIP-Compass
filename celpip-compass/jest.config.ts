@@ -1,21 +1,16 @@
 import type { Config } from 'jest'
-import nextJest from 'next/jest.js'
 
-const createJestConfig = nextJest({
-  // Provide the path to your Next.js app to load next.config.js and .env files
-  dir: './',
-})
-
-// Add any custom config to be passed to Jest
 const config: Config = {
-  // Add more setup options before each test is run
-  setupFilesAfterEnv: ['./jest.setup.js'],
-
   // Test environment
   testEnvironment: 'jsdom',
 
+  // Use babel for transforms
+  transform: {
+    '^.+\\.(ts|tsx|js|jsx)$': ['babel-jest', { presets: ['@babel/preset-react', '@babel/preset-typescript'] }],
+  },
+
   // Coverage configuration
-  collectCoverage: true,
+  collectCoverage: false, // Enable with --coverage flag
   collectCoverageFrom: [
     'app/**/*.{js,jsx,ts,tsx}',
     'components/**/*.{js,jsx,ts,tsx}',
@@ -48,15 +43,13 @@ const config: Config = {
     '<rootDir>/node_modules/',
   ],
 
-  // Disable automatic mocking for better test isolation
-  automock: false,
-
-  // Mock module transform
+  // Transform ignore patterns
   transformIgnorePatterns: [
-    '/node_modules/',
-    '\\.pnp\\.[^\\/]+$',
+    '/node_modules/(?!(.*\\.mjs$))',
   ],
+
+  // Disable automock
+  automock: false,
 }
 
-// createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
-export default createJestConfig(config)
+export default config
