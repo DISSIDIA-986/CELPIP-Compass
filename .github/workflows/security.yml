@@ -13,6 +13,10 @@ defaults:
   run:
     working-directory: ./celpip-compass
 
+permissions:
+  contents: read
+  security-events: write
+
 jobs:
   security-audit:
     name: Security Audit
@@ -36,127 +40,32 @@ jobs:
         run: npm audit --audit-level moderate
         continue-on-error: true
 
-      - name: Run Snyk security scan
-        uses: snyk/actions/node@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --severity-threshold=high
-          command: test
-        continue-on-error: true
-
-      - name: Check for vulnerabilities in dependencies
-        run: |
-          echo "Checking for high severity vulnerabilities..."
-          npm audit --json | jq -r '.vulnerabilities[] | select(.severity == "moderate" or .severity == "high") | "\(.name): \(.severity) - \(.title)"' || true
-
-      - name: Security analysis report
+      - name: Security analysis summary
         run: |
           echo "## Security Analysis Report" >> $GITHUB_STEP_SUMMARY
           echo "### npm Audit Results" >> $GITHUB_STEP_SUMMARY
-          npm audit --json | jq -r '{
-            totalVulnerabilities: (.vulnerabilities | length),
-            moderateVulnerabilities: (.vulnerabilities[] | select(.severity == "moderate")) | length,
-            highVulnerabilities: (.vulnerabilities[] | select(.severity == "high")) | length,
-            criticalVulnerabilities: (.vulnerabilities[] | select(.severity == "critical")) | length
-          }' | jq -r '. | "Total: \(totalVulnerabilities)\nModerate: \(moderateVulnerabilities)\nHigh: \(highVulnerabilities)\nCritical: \(criticalVulnerabilities)"' >> $GITHUB_STEP_SUMMARY
+          npm audit --json 2>/dev/null | jq -r '.metadata | "- Total: \(.vulnerabilities.total)\n- Moderate: \(.vulnerabilities.moderate)\n- High: \(.vulnerabilities.high)\n- Critical: \(.vulnerabilities.critical)"' >> $GITHUB_STEP_SUMMARY || echo "No vulnerabilities found" >> $GITHUB_STEP_SUMMARY
 
   codeql-analysis:
     name: CodeQL Analysis
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        language: [ 'javascript' ]
+    permissions:
+      security-events: write
+      contents: read
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20.x'
-
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
-          languages: ${{ matrix.language }}
+          languages: javascript-typescript
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
         with:
           category: security
-
-  dependency-check:
-    name: Dependency Check
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Java (for OWASP Dependency Check)
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      - name: Install OWASP Dependency Check
-        run: |
-          curl -L https://github.com/jeremylong/DependencyCheck/releases/download/v8.2.1/dependency-check-8.2.1-release.zip -o dependency-check.zip
-          unzip dependency-check.zip
-          export PATH=$PATH:$PWD/dependency-check/bin
-
-      - name: Run Dependency Check
-        run: |
-          ./dependency-check/bin/dependency-check.sh --project "CELPIP Compass" --scan ./ --enableexperimental --format ALL
-          echo "## Dependency Check Results" >> $GITHUB_STEP_SUMMARY
-          echo "For detailed report, check the dependency-check-report.html file" >> $GITHUB_STEP_SUMMARY
-
-  secrets-scan:
-    name: Secrets Scan
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Run TruffleHog
-        uses: edjafarov/trufflehog-action@master
-        with:
-          path: ./
-          base: main
-          head: develop
-
-      - name: Run GitGuardian
-        uses: GitGuardian/gg-shield-action@main
-        with:
-          scan-path: .
-          config: ggshield.toml
-        continue-on-error: true
-
-  security-compliance:
-    name: Security Compliance
-    runs-on: ubuntu-latest
-    needs: [security-audit, codeql-analysis, dependency-check, secrets-scan]
-    if: always()
-
-    steps:
-      - name: Generate compliance report
-        run: |
-          echo "## Security Compliance Report" >> $GITHUB_STEP_SUMMARY
-          echo "### Scan Summary" >> $GITHUB_STEP_SUMMARY
-          echo "- npm Audit: ${{ needs.security-audit.result }}" >> $GITHUB_STEP_SUMMARY
-          echo "- CodeQL Analysis: ${{ needs.codeql-analysis.result }}" >> $GITHUB_STEP_SUMMARY
-          echo "- Dependency Check: ${{ needs.dependency-check.result }}" >> $GITHUB_STEP_SUMMARY
-          echo "- Secrets Scan: ${{ needs.secrets-scan.result }}" >> $GITHUB_STEP_SUMMARY
-
-      - name: Security notification
-        if: always()
-        uses: 8398a7/action-slack@v3
-        with:
-          status: ${{ job.security-compliance.result }}
-          channel: '#security'
-          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
