@@ -211,7 +211,7 @@ export interface CustomCard {
 
   // 卡片内容
   title: string;
-  content: any; // JSONB，灵活存储
+  content: Record<string, unknown>; // JSONB，灵活存储
   type: CardType;
   difficulty: DifficultyLevel;
   tags: string[];
@@ -318,7 +318,7 @@ export interface ApiResponse<T> {
   error?: {
     code: string;
     message: string;
-    details?: any;
+    details?: unknown;
   };
   message?: string;
 }
