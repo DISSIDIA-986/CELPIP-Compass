@@ -62,7 +62,7 @@ export const sampleFlashcards: Flashcard[] = [
       repetitions: 0,
       dueDate: new Date('2025-12-29T08:00:00Z')
     },
-    lastReviewedAt: null,
+    lastReviewedAt: undefined,
     nextReviewAt: new Date('2025-12-29T08:00:00Z')
   },
 
@@ -126,7 +126,7 @@ export const sampleFlashcards: Flashcard[] = [
       repetitions: 0,
       dueDate: new Date('2025-12-29T08:00:00Z')
     },
-    lastReviewedAt: null,
+    lastReviewedAt: undefined,
     nextReviewAt: new Date('2025-12-29T08:00:00Z')
   },
 
@@ -196,7 +196,7 @@ export const sampleFlashcards: Flashcard[] = [
       repetitions: 0,
       dueDate: new Date('2025-12-29T08:00:00Z')
     },
-    lastReviewedAt: null,
+    lastReviewedAt: undefined,
     nextReviewAt: new Date('2025-12-29T08:00:00Z')
   },
 
@@ -265,7 +265,7 @@ export const sampleFlashcards: Flashcard[] = [
       repetitions: 0,
       dueDate: new Date('2025-12-29T08:00:00Z')
     },
-    lastReviewedAt: null,
+    lastReviewedAt: undefined,
     nextReviewAt: new Date('2025-12-29T08:00:00Z')
   },
 
@@ -330,7 +330,7 @@ export const sampleFlashcards: Flashcard[] = [
       repetitions: 0,
       dueDate: new Date('2025-12-29T08:00:00Z')
     },
-    lastReviewedAt: null,
+    lastReviewedAt: undefined,
     nextReviewAt: new Date('2025-12-29T08:00:00Z')
   },
 
@@ -394,7 +394,7 @@ export const sampleFlashcards: Flashcard[] = [
       repetitions: 0,
       dueDate: new Date('2025-12-29T08:00:00Z')
     },
-    lastReviewedAt: null,
+    lastReviewedAt: undefined,
     nextReviewAt: new Date('2025-12-29T08:00:00Z')
   },
 
@@ -463,7 +463,7 @@ export const sampleFlashcards: Flashcard[] = [
       repetitions: 0,
       dueDate: new Date('2025-12-29T08:00:00Z')
     },
-    lastReviewedAt: null,
+    lastReviewedAt: undefined,
     nextReviewAt: new Date('2025-12-29T08:00:00Z')
   },
 
@@ -531,7 +531,7 @@ export const sampleFlashcards: Flashcard[] = [
       repetitions: 0,
       dueDate: new Date('2025-12-29T08:00:00Z')
     },
-    lastReviewedAt: null,
+    lastReviewedAt: undefined,
     nextReviewAt: new Date('2025-12-29T08:00:00Z')
   }
 ];
