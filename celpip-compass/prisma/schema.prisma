@@ -1,0 +1,253 @@
+// CELPIP Compass Database Schema
+// Prisma 7.x with PostgreSQL
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// =============================================
+// Enums - Matching frontend types exactly
+// =============================================
+
+enum CardType {
+  WRITING_TASK1      // Writing Task 1: Email writing
+  WRITING_TASK2      // Writing Task 2: Opinion essay
+  SPEAKING_TASK      // Speaking Tasks 1-8: Situational responses
+  LISTENING_KEYWORD  // Listening keyword prediction
+}
+
+enum DifficultyLevel {
+  CLB7  // Canadian Language Benchmark 7
+  CLB8  // Canadian Language Benchmark 8
+  CLB9  // Canadian Language Benchmark 9
+}
+
+enum CardStatus {
+  NEW       // New card, never reviewed
+  LEARNING  // Currently learning
+  REVIEW    // In review cycle
+  MASTERED  // Mastered (long intervals)
+  ARCHIVED  // Archived/inactive
+}
+
+enum Role {
+  STUDENT
+  TEACHER
+  ADMIN
+}
+
+// =============================================
+// User Models
+// =============================================
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  password  String
+  role      Role     @default(STUDENT)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  preferences UserPreferences?
+  cards       Card[]
+  reviews     Review[]
+  sessions    StudySession[]
+  favorites   Favorite[]
+  progress    UserProgress[]
+
+  @@map("users")
+}
+
+model UserPreferences {
+  id            String  @id @default(cuid())
+  userId        String  @unique
+  user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Display preferences
+  language      String  @default("en")
+  theme         String  @default("light")
+
+  // Notification settings
+  notifications   Boolean @default(true)
+  studyReminder   Boolean @default(true)
+
+  // Learning preferences
+  dailyGoal       Int     @default(20)  // Minutes per day
+  preferredTypes  CardType[]
+
+  @@map("user_preferences")
+}
+
+// =============================================
+// Flashcard Models
+// =============================================
+
+model Card {
+  id       String   @id @default(cuid())
+  userId   String?  // Null for system/sample cards
+  user     User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Core content
+  type       CardType
+  title      String
+  scenario   String          @db.Text
+  tone       String?
+
+  // Classification
+  difficulty DifficultyLevel @default(CLB8)
+  status     CardStatus      @default(NEW)
+
+  // Complex structured content (JSONB)
+  // EssentialPhrases: { opening: string[], purpose: string[], details: string[], closing: string[] }
+  essentialPhrases Json
+
+  // UpgradePackage: { vocabulary: Record<string, string[]>, structure?: Record<string, string> }
+  upgrades Json
+
+  // PracticeItem: { question: string, keyPoints: string[] }
+  practice Json?
+
+  // SM2 Algorithm metadata
+  // SpacedRepetitionMetadata: { ease: number, interval: number, repetitions: number, dueDate: Date }
+  metadata Json?
+
+  // Review tracking
+  lastReviewedAt DateTime?
+  nextReviewAt   DateTime?
+
+  // Statistics
+  reviewCount         Int   @default(0)
+  correctCount        Int   @default(0)
+  averageQualityScore Float @default(0)
+  totalStudyTime      Int   @default(0) // Seconds
+
+  // Flags
+  isDeleted Boolean @default(false)
+  isPublic  Boolean @default(true)
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  reviews   Review[]
+  favorites Favorite[]
+  progress  UserProgress[]
+
+  // Indexes for common queries
+  @@index([type])
+  @@index([difficulty])
+  @@index([status])
+  @@index([nextReviewAt])
+  @@index([isDeleted, isPublic])
+  @@map("cards")
+}
+
+// =============================================
+// Learning Progress Models
+// =============================================
+
+model Review {
+  id       String @id @default(cuid())
+  userId   String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cardId   String
+  card     Card   @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  // Quality scores (0-5 scale)
+  accuracyScore      Int
+  fluencyScore       Int?
+  completenessScore  Int?
+  pronunciationScore Int?  // For speaking cards
+  structureScore     Int?  // For writing cards
+
+  // Computed overall quality
+  overallQuality Int
+
+  // Review timing
+  responseTime Int? // Milliseconds
+
+  // Timestamps
+  createdAt DateTime @default(now())
+
+  @@index([userId, cardId])
+  @@index([createdAt])
+  @@map("reviews")
+}
+
+model UserProgress {
+  id       String @id @default(cuid())
+  userId   String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cardId   String
+  card     Card   @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  // Progress state
+  status      CardStatus @default(NEW)
+  currentStep Int        @default(0)
+
+  // SM2 algorithm state per user-card
+  ease        Float @default(2.5)
+  interval    Int   @default(1)
+  repetitions Int   @default(0)
+
+  // Statistics
+  totalReviews       Int   @default(0)
+  successRate        Float @default(0)
+  averageResponseTime Int  @default(0) // Milliseconds
+
+  // Timestamps
+  lastAccessedAt DateTime?
+  nextReviewAt   DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@unique([userId, cardId])
+  @@index([nextReviewAt])
+  @@map("user_progress")
+}
+
+model StudySession {
+  id       String @id @default(cuid())
+  userId   String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Session timing
+  sessionStart DateTime @default(now())
+  sessionEnd   DateTime?
+
+  // Session stats
+  durationSeconds Int @default(0)
+  cardsReviewed   Int @default(0)
+  correctCount    Int @default(0)
+  accuracyRate    Float @default(0)
+
+  // Timestamps
+  createdAt DateTime @default(now())
+
+  @@index([userId, sessionStart])
+  @@map("study_sessions")
+}
+
+model Favorite {
+  id       String @id @default(cuid())
+  userId   String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cardId   String
+  card     Card   @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  notes String? @db.Text
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, cardId])
+  @@map("favorites")
+}
