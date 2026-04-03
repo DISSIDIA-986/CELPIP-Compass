@@ -19,6 +19,7 @@ const mapCardTypeToPrisma = (type: FrontendCardType): PrismaCardType => {
     [FrontendCardType.WRITING_TASK2]: PrismaCardType.WRITING_TASK2,
     [FrontendCardType.SPEAKING_TASK]: PrismaCardType.SPEAKING_TASK,
     [FrontendCardType.LISTENING_KEYWORD]: PrismaCardType.LISTENING_KEYWORD,
+    [FrontendCardType.READING]: PrismaCardType.READING,
   }
   return mapping[type]
 }
@@ -60,6 +61,7 @@ const mapCardTypeFromPrisma = (type: PrismaCardType): FrontendCardType => {
     [PrismaCardType.WRITING_TASK2]: FrontendCardType.WRITING_TASK2,
     [PrismaCardType.SPEAKING_TASK]: FrontendCardType.SPEAKING_TASK,
     [PrismaCardType.LISTENING_KEYWORD]: FrontendCardType.LISTENING_KEYWORD,
+    [PrismaCardType.READING]: FrontendCardType.READING,
   }
   return mapping[type]
 }

@@ -20,6 +20,7 @@ enum CardType {
   WRITING_TASK2      // Writing Task 2: Opinion essay
   SPEAKING_TASK      // Speaking Tasks 1-8: Situational responses
   LISTENING_KEYWORD  // Listening keyword prediction
+  READING            // Reading strategies
 }
 
 enum DifficultyLevel {

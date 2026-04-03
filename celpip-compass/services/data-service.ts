@@ -96,15 +96,11 @@ export class DataService {
   }
 
   static getPromptsByCategory(category: string) {
-    return aiPrompts.find(p => p.category === category)?.prompts || [];
+    return aiPrompts.filter(p => p.id.includes(category));
   }
 
   static getPromptById(id: string) {
-    for (const category of aiPrompts) {
-      const prompt = category.prompts.find(p => p.id === id);
-      if (prompt) return prompt;
-    }
-    return undefined;
+    return aiPrompts.find(p => p.id === id);
   }
 
   // 数据导出（用于备份）
@@ -117,32 +113,9 @@ export class DataService {
     };
   }
 
-  // 示例：获取卡片的学习建议
-  static getStudyRecommendations() {
-    const stats = this.getStatistics();
-    const recommendations = [];
-
-    if (stats.newCards > stats.total * 0.6) {
-      recommendations.push('建议先从新卡片开始学习，建立基础知识');
-    }
-
-    if (stats.inProgress > stats.total * 0.3) {
-      recommendations.push('当前有较多卡片正在学习中，建议加强复习频率');
-    }
-
-    if (stats.mastered < stats.total * 0.2) {
-      recommendations.push('已掌握的卡片较少，建议保持持续学习和复习');
-    }
-
-    const writingTasks = stats.byType[CardType.WRITING_TASK1] + stats.byType[CardType.WRITING_TASK2];
-    const speakingTasks = stats.byType[CardType.SPEAKING_TASK];
-    const listeningTasks = stats.byType[CardType.LISTENING_KEYWORD];
-
-    if (writingTasks > speakingTasks + listeningTasks) {
-      recommendations.push('写作卡片较多，建议增加口语和听力练习的比重');
-    }
-
-    return recommendations;
+  // 学习建议 — 压缩后卡片数量和类型分布已优化，比例阈值不再适用
+  static getStudyRecommendations(): string[] {
+    return [];
   }
 
   static updateCard(updatedCard: Flashcard): void {

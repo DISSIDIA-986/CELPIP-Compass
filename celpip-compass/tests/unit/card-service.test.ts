@@ -136,6 +136,40 @@ describe('Card Service', () => {
   })
 })
 
+describe('Card Content Completeness', () => {
+  it('should have at least one card for each non-speaking CardType', async () => {
+    const result = await cardService.getCards({ limit: 200 })
+    const cards = result.data!.cards
+    const types = new Set(cards.map(c => c.type))
+
+    // High-priority types must have cards
+    expect(types.has(CardType.WRITING_TASK1)).toBe(true)
+    expect(types.has(CardType.WRITING_TASK2)).toBe(true)
+    expect(types.has(CardType.READING)).toBe(true)
+    expect(types.has(CardType.LISTENING_KEYWORD)).toBe(true)
+  })
+
+  it('should have between 30 and 70 total cards after compression', async () => {
+    const result = await cardService.getCards({ limit: 200 })
+    const total = result.data!.cards.length
+    expect(total).toBeGreaterThanOrEqual(30)
+    expect(total).toBeLessThanOrEqual(70)
+  })
+
+  it('should have all required fields on every card', async () => {
+    const result = await cardService.getCards({ limit: 200 })
+    for (const card of result.data!.cards) {
+      expect(card.id).toBeTruthy()
+      expect(card.type).toBeTruthy()
+      expect(card.title).toBeTruthy()
+      expect(card.scenario).toBeTruthy()
+      expect(card.difficulty).toBeTruthy()
+      expect(card.essentialPhrases).toBeDefined()
+      expect(card.upgrades).toBeDefined()
+    }
+  })
+})
+
 describe('Card Service with Database', () => {
   // These tests require a running PostgreSQL database
   // Skip if DATABASE_URL is not configured

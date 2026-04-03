@@ -2,6 +2,9 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## 语言偏好
+请用中文回复。用户母语是中文，阅读中文更快。代码、命令、技术术语可以保持英文。
+
 ## Project Overview
 
 CELPIP Compass is a spaced repetition learning system for CELPIP (Canadian English Language Proficiency Index Program) test preparation. It implements the SM2 (SuperMemo 2) algorithm to optimize learning intervals. The project is a Next.js 16 application with TypeScript, using Prisma as the ORM and PostgreSQL as the database.

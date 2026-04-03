@@ -25,6 +25,8 @@ export const SampleCard: React.FC<SampleCardProps> = ({
         return '口语';
       case CardType.LISTENING_KEYWORD:
         return '听力关键词';
+      case CardType.READING:
+        return '阅读策略';
       default:
         return type;
     }
@@ -191,6 +193,38 @@ export const SampleCard: React.FC<SampleCardProps> = ({
                   <li key={idx} className="text-sm text-gray-600 flex items-start">
                     <span className="text-green-500 mr-2">✓</span>
                     {point}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* 策展攻略链接 */}
+          {card.curatedLinks && card.curatedLinks.length > 0 && (
+            <div>
+              <h4 className="text-sm font-semibold text-gray-700 mb-2">攻略推荐</h4>
+              <ul className="space-y-2">
+                {card.curatedLinks.map((link, idx) => (
+                  <li key={idx} className="bg-gray-50 p-2 rounded">
+                    <a
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                    >
+                      {link.title}
+                    </a>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-xs px-1.5 py-0.5 rounded bg-gray-200 text-gray-600">
+                        {link.platform}
+                      </span>
+                      <span className="text-xs px-1.5 py-0.5 rounded bg-blue-100 text-blue-700">
+                        {link.verdict.replace('_', ' ')}
+                      </span>
+                      {link.note && (
+                        <span className="text-xs text-gray-500">{link.note}</span>
+                      )}
+                    </div>
                   </li>
                 ))}
               </ul>

@@ -8,7 +8,20 @@ export enum CardType {
   WRITING_TASK1 = 'writing-task1',     // 写作 Task 1: 邮件写作
   WRITING_TASK2 = 'writing-task2',     // 写作 Task 2: 观点论证
   SPEAKING_TASK = 'speaking-task',     // 口 Task 1-8: 情景回应
-  LISTENING_KEYWORD = 'listening-keyword' // 听力关键词预判
+  LISTENING_KEYWORD = 'listening-keyword', // 听力关键词预判
+  READING = 'reading'                  // 阅读策略
+}
+
+// 策展链接 verdict 类型
+export type CuratedLinkVerdict = 'template' | 'walkthrough' | 'scoring_insight' | 'time_strategy';
+
+// 策展链接接口
+export interface CuratedLink {
+  url: string;
+  platform: 'bilibili' | 'xiaohongshu' | 'zhihu' | 'x' | 'youtube' | 'other';
+  title: string;
+  verdict: CuratedLinkVerdict;
+  note?: string;
 }
 
 // 难度级别枚举
@@ -85,6 +98,9 @@ export interface Flashcard {
   essentialPhrases: EssentialPhrases;
   upgrades: UpgradePackage;
   practice?: PracticeItem;
+
+  // 策展的社媒攻略链接
+  curatedLinks?: CuratedLink[];
 
   // 间隔重复数据
   metadata?: SpacedRepetitionMetadata;
