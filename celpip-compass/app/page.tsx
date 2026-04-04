@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import {
   LazyStudyDashboard,
   LazyStudyProgress,
@@ -79,6 +80,12 @@ export default function Home() {
                   >
                     卡片库
                   </button>
+                  <Link
+                    href="/courses"
+                    className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors"
+                  >
+                    攻略课程
+                  </Link>
                 </div>
               </div>
             </div>
@@ -110,6 +117,12 @@ export default function Home() {
                 {label}
               </button>
             ))}
+            <Link
+              href="/courses"
+              className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
+            >
+              攻略课程
+            </Link>
           </div>
         </div>
       </nav>
