@@ -1,7 +1,10 @@
 /** @type {import('next').NextConfig} */
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
-  enabled: process.env.ANALYZE_BUNDLE === 'true',
-})
+let withBundleAnalyzer = (config) => config
+try {
+  withBundleAnalyzer = require('@next/bundle-analyzer')({
+    enabled: process.env.ANALYZE_BUNDLE === 'true',
+  })
+} catch { /* optional dev dependency */ }
 
 const nextConfig = {
   // React compiler for better performance (Next.js 16)
