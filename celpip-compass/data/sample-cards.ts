@@ -1,4 +1,44 @@
-import { Flashcard, CardType, CardStatus, DifficultyLevel } from '@/types/flashcards';
+import { Flashcard, CardType, CardStatus, DifficultyLevel, CuratedLink } from '@/types/flashcards';
+
+// Curated social media links mapped by card ID
+const curatedLinksMap: Record<string, CuratedLink[]> = {
+  'reading-part3-skimming': [
+    { url: 'https://www.youtube.com/watch?v=OGOPEerpDpA', platform: 'youtube', title: 'CELPIP Reading Part 3: 8 Tips and Tricks for CLB 10+', verdict: 'time_strategy', note: '专攻Part 3略读/扫读技巧' },
+    { url: 'https://www.youtube.com/watch?v=5plcErgl0N0', platform: 'youtube', title: 'The One CELPIP Reading Strategy You Need for 2026', verdict: 'walkthrough', note: '2026年最新阅读策略' },
+  ],
+  'reading-part4-opinion-identification': [
+    { url: 'https://www.youtube.com/watch?v=OFhWS6NmxeE', platform: 'youtube', title: '10 of the BEST CELPIP Reading Strategies', verdict: 'walkthrough', note: '10个阅读策略全覆盖' },
+  ],
+  'reading-general-time-management': [
+    { url: 'https://www.youtube.com/watch?v=Y4TfX89ZrS0', platform: 'youtube', title: 'CELPIP 2025 - My Top 3 Reading Tips', verdict: 'time_strategy', note: '3个核心阅读技巧含时间分配' },
+  ],
+  'reading-general-answer-elimination': [
+    { url: 'https://zhuanlan.zhihu.com/p/566157180', platform: 'zhihu', title: '思培考试扫盲，CELPIP看这篇就够了', verdict: 'walkthrough', note: '中文全面攻略含排除法技巧' },
+  ],
+  'reading-academic-vocabulary': [
+    { url: 'https://www.youtube.com/watch?v=qt5NXO8YYek', platform: 'youtube', title: 'CELPIP Reading | Practice Questions & Proven Strategies', verdict: 'walkthrough', note: '阅读真题+策略含学术词汇' },
+  ],
+  'writing-task1-complaint': [
+    { url: 'https://www.youtube.com/watch?v=mjwHVsMrf-c', platform: 'youtube', title: 'CELPIP Writing Task 1 Template for 2026!', verdict: 'template', note: '2026最新Task 1模板' },
+    { url: 'https://www.youtube.com/watch?v=oRPdQr8Omzs', platform: 'youtube', title: 'CELPIP Writing Task 1 General SAMPLE Answer + TEMPLATE', verdict: 'template', note: '完整示例答案+模板' },
+    { url: 'https://www.reddit.com/r/CELPIP_Guide/comments/1nzm4gm/my_proven_celpip_writing_task_1_strategy_6part/', platform: 'other', title: 'My Proven CELPIP Writing Task 1 Strategy: 6-Part Structure', verdict: 'template', note: '6步邮件结构含真实案例' },
+  ],
+  'writing-task2-remote-work': [
+    { url: 'https://www.youtube.com/watch?v=-0z4vB_l1C8', platform: 'youtube', title: '2025 CELPIP Writing Templates', verdict: 'walkthrough', note: 'Task 2论证模板含真实范文' },
+    { url: 'https://www.youtube.com/watch?v=ddedplCGDrQ', platform: 'youtube', title: 'The BEST 2025 CELPIP Exam Tips/Tricks In Just 40 Minutes', verdict: 'scoring_insight', note: '40分钟全覆盖评分标准和策略' },
+  ],
+  'speaking-task4-prediction-tech': [
+    { url: 'https://www.youtube.com/watch?v=UpE5v64pnlw', platform: 'youtube', title: 'How to Pass CELPIP Speaking Test | 8 Tasks Explained', verdict: 'walkthrough', note: '8个口语Task全部讲解+评分标准' },
+    { url: 'https://www.youtube.com/watch?v=WKvTub5tkWo', platform: 'youtube', title: 'CELPIP Speaking Test - 36 (2025) | Realistic Practice', verdict: 'walkthrough', note: '2025最新口语练习+专家技巧' },
+    { url: 'https://www.youtube.com/watch?v=-H4FSy4SJlM', platform: 'youtube', title: 'CELPIP Speaking: Proven Strategies for 9+ Band', verdict: 'scoring_insight', note: '口语9+策略和评分机制解析' },
+  ],
+  'listening-signal-words': [
+    { url: 'https://webberz.in/blog/?p=1757', platform: 'other', title: 'CELPIP Listening Strategies', verdict: 'walkthrough', note: '关键词识别+语气判断+笔记技巧' },
+  ],
+  'listening-general-answer': [
+    { url: 'https://www.youtube.com/watch?v=pGrphnEShIM', platform: 'youtube', title: 'How to Pass CELPIP in 2025!', verdict: 'walkthrough', note: '听力答题最大错误分析' },
+  ],
+};
 
 // Helper function to create base card with default values
 const createCard = (
@@ -39,7 +79,7 @@ const createCard = (
   nextReviewAt: new Date('2025-12-29T08:00:00Z')
 });
 
-export const sampleFlashcards: Flashcard[] = [
+const _cards: Flashcard[] = [
   // ========================================
   // === WRITING TASK 1: 邮件写作 (9张) ===
   // ========================================
@@ -1171,6 +1211,12 @@ export const sampleFlashcards: Flashcard[] = [
     }
   )
 ];
+
+// Attach curated links to cards
+export const sampleFlashcards: Flashcard[] = _cards.map(card => {
+  const links = curatedLinksMap[card.id];
+  return links ? { ...card, curatedLinks: links } : card;
+});
 
 // AI Prompts (保持不变，从原文件复制)
 export const aiPrompts = [
