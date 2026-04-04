@@ -90,7 +90,7 @@ celpip-compass/
 ├── lib/courses.ts          # 课程数据加载
 ├── services/               # 业务逻辑 (SM2, DataService, CardService)
 ├── types/flashcards.ts     # 类型定义 (含 CuratedLink, READING 枚举)
-├── public/images/          # 21 张视觉资产
+├── public/images/          # 33 张视觉资产 (含 12 张幻灯片)
 ├── tests/                  # 测试 (unit + e2e)
 └── prisma/                 # 数据库 schema
 ```
