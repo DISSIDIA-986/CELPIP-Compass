@@ -1,0 +1,29 @@
+[
+  {
+    "id": "cover-2week-plan",
+    "promptFiles": ["prompts/cover-2week-plan.md"],
+    "image": "cover-2week-plan.png",
+    "provider": "dashscope",
+    "model": "qwen-image-2.0-pro",
+    "ar": "16:9",
+    "quality": "2k"
+  },
+  {
+    "id": "cover-strategy-handbook",
+    "promptFiles": ["prompts/cover-strategy-handbook.md"],
+    "image": "cover-strategy-handbook.png",
+    "provider": "dashscope",
+    "model": "qwen-image-2.0-pro",
+    "ar": "16:9",
+    "quality": "2k"
+  },
+  {
+    "id": "cover-resource-library",
+    "promptFiles": ["prompts/cover-resource-library.md"],
+    "image": "cover-resource-library.png",
+    "provider": "dashscope",
+    "model": "qwen-image-2.0-pro",
+    "ar": "16:9",
+    "quality": "2k"
+  }
+]

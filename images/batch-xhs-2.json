@@ -1,0 +1,59 @@
+{
+  "jobs": 1,
+  "tasks": [
+    {
+      "id": "xhs-reading-1",
+      "promptFiles": ["prompts/xhs-reading-1.md"],
+      "image": "xhs-reading-1.png",
+      "provider": "dashscope",
+      "model": "qwen-image-2.0-pro",
+      "ar": "3:4",
+      "quality": "2k"
+    },
+    {
+      "id": "xhs-reading-2",
+      "promptFiles": ["prompts/xhs-reading-2.md"],
+      "image": "xhs-reading-2.png",
+      "provider": "dashscope",
+      "model": "qwen-image-2.0-pro",
+      "ar": "3:4",
+      "quality": "2k"
+    },
+    {
+      "id": "xhs-reading-3",
+      "promptFiles": ["prompts/xhs-reading-3.md"],
+      "image": "xhs-reading-3.png",
+      "provider": "dashscope",
+      "model": "qwen-image-2.0-pro",
+      "ar": "3:4",
+      "quality": "2k"
+    },
+    {
+      "id": "xhs-listening-1",
+      "promptFiles": ["prompts/xhs-listening-1.md"],
+      "image": "xhs-listening-1.png",
+      "provider": "dashscope",
+      "model": "qwen-image-2.0-pro",
+      "ar": "3:4",
+      "quality": "2k"
+    },
+    {
+      "id": "xhs-listening-2",
+      "promptFiles": ["prompts/xhs-listening-2.md"],
+      "image": "xhs-listening-2.png",
+      "provider": "dashscope",
+      "model": "qwen-image-2.0-pro",
+      "ar": "3:4",
+      "quality": "2k"
+    },
+    {
+      "id": "xhs-speaking-1",
+      "promptFiles": ["prompts/xhs-speaking-1.md"],
+      "image": "xhs-speaking-1.png",
+      "provider": "dashscope",
+      "model": "qwen-image-2.0-pro",
+      "ar": "3:4",
+      "quality": "2k"
+    }
+  ]
+}

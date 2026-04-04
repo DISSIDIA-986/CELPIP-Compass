@@ -1,0 +1,69 @@
+{
+  "jobs": 3,
+  "tasks": [
+    {
+      "id": "xhs-listening-2",
+      "promptFiles": ["prompts/xhs-listening-2.md"],
+      "image": "xhs-listening-2.png",
+      "provider": "dashscope",
+      "model": "qwen-image-2.0-pro",
+      "ar": "9:16"
+    },
+    {
+      "id": "comic-time-management",
+      "promptFiles": ["prompts/comic-time-management.md"],
+      "image": "comic-time-management.png",
+      "provider": "dashscope",
+      "model": "qwen-image-2.0-pro",
+      "ar": "16:9"
+    },
+    {
+      "id": "comic-writing-format",
+      "promptFiles": ["prompts/comic-writing-format.md"],
+      "image": "comic-writing-format.png",
+      "provider": "dashscope",
+      "model": "qwen-image-2.0-pro",
+      "ar": "16:9"
+    },
+    {
+      "id": "comic-signal-words",
+      "promptFiles": ["prompts/comic-signal-words.md"],
+      "image": "comic-signal-words.png",
+      "provider": "dashscope",
+      "model": "qwen-image-2.0-pro",
+      "ar": "16:9"
+    },
+    {
+      "id": "cover-2week-plan",
+      "promptFiles": ["prompts/cover-2week-plan.md"],
+      "image": "cover-2week-plan.png",
+      "provider": "dashscope",
+      "model": "qwen-image-2.0-pro",
+      "ar": "16:9"
+    },
+    {
+      "id": "cover-strategy-handbook",
+      "promptFiles": ["prompts/cover-strategy-handbook.md"],
+      "image": "cover-strategy-handbook.png",
+      "provider": "dashscope",
+      "model": "qwen-image-2.0-pro",
+      "ar": "16:9"
+    },
+    {
+      "id": "cover-resource-library",
+      "promptFiles": ["prompts/cover-resource-library.md"],
+      "image": "cover-resource-library.png",
+      "provider": "dashscope",
+      "model": "qwen-image-2.0-pro",
+      "ar": "16:9"
+    },
+    {
+      "id": "slide-deck",
+      "promptFiles": ["prompts/slide-deck.md"],
+      "image": "slide-deck.png",
+      "provider": "dashscope",
+      "model": "qwen-image-2.0-pro",
+      "ar": "16:9"
+    }
+  ]
+}

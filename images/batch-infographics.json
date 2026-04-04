@@ -1,0 +1,50 @@
+{
+  "jobs": 4,
+  "tasks": [
+    {
+      "id": "writing-strategy",
+      "promptFiles": ["prompts/writing-strategy.md"],
+      "image": "writing-strategy-infographic.png",
+      "provider": "dashscope",
+      "model": "qwen-image-2.0-pro",
+      "ar": "16:9",
+      "quality": "2k"
+    },
+    {
+      "id": "reading-strategy",
+      "promptFiles": ["prompts/reading-strategy.md"],
+      "image": "reading-strategy-infographic.png",
+      "provider": "dashscope",
+      "model": "qwen-image-2.0-pro",
+      "ar": "16:9",
+      "quality": "2k"
+    },
+    {
+      "id": "listening-strategy",
+      "promptFiles": ["prompts/listening-strategy.md"],
+      "image": "listening-strategy-infographic.png",
+      "provider": "dashscope",
+      "model": "qwen-image-2.0-pro",
+      "ar": "16:9",
+      "quality": "2k"
+    },
+    {
+      "id": "speaking-strategy",
+      "promptFiles": ["prompts/speaking-strategy.md"],
+      "image": "speaking-strategy-infographic.png",
+      "provider": "dashscope",
+      "model": "qwen-image-2.0-pro",
+      "ar": "16:9",
+      "quality": "2k"
+    },
+    {
+      "id": "2week-roadmap",
+      "promptFiles": ["prompts/2week-roadmap.md"],
+      "image": "2week-roadmap-infographic.png",
+      "provider": "dashscope",
+      "model": "qwen-image-2.0-pro",
+      "ar": "16:9",
+      "quality": "2k"
+    }
+  ]
+}
