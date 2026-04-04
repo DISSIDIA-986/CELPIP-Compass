@@ -77,21 +77,22 @@ npx prisma db seed      # Seed database
 ### Directory Structure
 ```
 celpip-compass/
-├── app/                     # Next.js App Router (primary code)
-│   ├── api/v1/             # API routes
-│   │   ├── auth/          # Authentication endpoints
-│   │   ├── cards/         # Flashcard management
-│   │   └── data/          # Sample data endpoints
-│   ├── components/        # React components
-│   ├── hooks/             # Custom React hooks
-│   ├── lib/               # Utility libraries
-│   ├── middleware/        # Next.js middleware
-│   ├── services/          # Business logic
-│   ├── types/             # TypeScript definitions
-│   └── utils/             # Utility functions
-├── components/            # Additional components (some duplication)
-├── tests/                 # Test suites (unit + e2e)
-└── prisma/                # Database schema and migrations
+├── app/                     # Next.js App Router
+│   ├── api/v1/             # API routes (auth, cards, data)
+│   ├── courses/            # 攻略课程页面 (/courses, /courses/[slug])
+│   └── page.tsx            # 首页 (学习中心 + 导航)
+├── components/
+│   ├── Cards/              # 闪卡组件 (SampleCard 含 curatedLinks)
+│   └── MarkdownViewer.tsx  # Markdown 渲染器 (Server Component)
+├── data/
+│   ├── sample-cards.ts     # 41 张策略闪卡 + 社媒链接
+│   └── courses/            # Markdown 课程文件 (3份)
+├── lib/courses.ts          # 课程数据加载
+├── services/               # 业务逻辑 (SM2, DataService, CardService)
+├── types/flashcards.ts     # 类型定义 (含 CuratedLink, READING 枚举)
+├── public/images/          # 21 张视觉资产
+├── tests/                  # 测试 (unit + e2e)
+└── prisma/                 # 数据库 schema
 ```
 
 ### Key Architectural Patterns
@@ -198,7 +199,7 @@ model Review {
 
 ### Key Enums
 ```typescript
-enum CardType { WRITING, SPEAKING, LISTENING, READING, GRAMMAR, VOCABULARY }
+enum CardType { WRITING_TASK1, WRITING_TASK2, SPEAKING_TASK, LISTENING_KEYWORD, READING }
 enum DifficultyLevel { BEGINNER, INTERMEDIATE, ADVANCED }
 enum CardStatus { NEW, LEARNING, REVIEW, MASTERED }
 enum Role { USER, ADMIN }
@@ -255,7 +256,11 @@ if (quality >= 3) {
 - `GET /api/v1/cards/schedule` - Get study schedule
 
 ### Data
-- `GET /api/v1/data/sample-cards` - Get sample flashcard data
+- `GET /api/v1/data/sample-cards` - Get sample flashcard data (41 strategy cards)
+
+### Course Pages (App Router)
+- `/courses` - Course listing page (3 courses with cover images)
+- `/courses/[slug]` - Individual course page (Markdown rendering)
 
 ## Configuration Files
 
@@ -343,6 +348,9 @@ NODE_ENV=development
 - `bcryptjs`: Password hashing
 - `zod`: Schema validation
 - `date-fns`: Date utilities
+- `react-markdown`: Markdown rendering for course pages
+- `remark-gfm`: GitHub Flavored Markdown (tables, strikethrough)
+- `@tailwindcss/typography`: Prose styling for Markdown content
 
 ### Development Dependencies
 - `@types/*`: TypeScript type definitions
