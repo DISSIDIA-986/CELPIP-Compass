@@ -230,3 +230,4 @@ sample-data/
 local.config.js
 local.config.json
 /generated/prisma
+.gstack/
