@@ -18,8 +18,9 @@ export function MarkdownViewer({ content }: MarkdownViewerProps) {
       prose-table:text-sm
       prose-th:bg-gray-50 prose-th:px-3 prose-th:py-2
       prose-td:px-3 prose-td:py-2
-      prose-code:bg-gray-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm
+      prose-code:bg-gray-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:text-gray-800
       prose-pre:bg-gray-900 prose-pre:text-gray-100
+      [&_pre_code]:bg-transparent [&_pre_code]:text-inherit [&_pre_code]:p-0
       prose-img:rounded-lg prose-img:shadow-md
       prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline
       prose-li:marker:text-gray-400
