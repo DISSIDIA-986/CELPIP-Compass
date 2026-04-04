@@ -1,3 +1,5 @@
+'use client';
+
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import Image from 'next/image';
@@ -50,7 +52,9 @@ export function MarkdownViewer({ content }: MarkdownViewerProps) {
             </a>
           ),
         }}
-      />
+      >
+        {content}
+      </ReactMarkdown>
     </article>
   );
 }
