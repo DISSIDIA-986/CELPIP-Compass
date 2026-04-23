@@ -2,6 +2,7 @@
 
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import rehypeSlug from 'rehype-slug';
 import Image from 'next/image';
 
 interface MarkdownViewerProps {
@@ -27,6 +28,7 @@ export function MarkdownViewer({ content }: MarkdownViewerProps) {
     ">
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
+        rehypePlugins={[rehypeSlug]}
         components={{
           img: ({ src, alt }) => {
             const imgSrc = typeof src === 'string' ? src : '';
@@ -47,11 +49,17 @@ export function MarkdownViewer({ content }: MarkdownViewerProps) {
             // eslint-disable-next-line @next/next/no-img-element
             return <img src={imgSrc} alt={alt || ''} className="rounded-lg shadow-md" />;
           },
-          a: ({ href, children }) => (
-            <a href={href} target="_blank" rel="noopener noreferrer">
-              {children}
-            </a>
-          ),
+          a: ({ href, children }) => {
+            const isHashLink = typeof href === 'string' && href.startsWith('#');
+            if (isHashLink) {
+              return <a href={href}>{children}</a>;
+            }
+            return (
+              <a href={href} target="_blank" rel="noopener noreferrer">
+                {children}
+              </a>
+            );
+          },
         }}
       >
         {content}
