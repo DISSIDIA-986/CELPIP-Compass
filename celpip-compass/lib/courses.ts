@@ -12,14 +12,24 @@ export interface Course {
 const COURSES_DIR = path.join(process.cwd(), 'data/courses');
 
 const courseMeta: Record<string, { title: string; description: string; coverImage?: string }> = {
-  '2周冲刺方案': {
-    title: 'CELPIP 2周冲刺方案',
-    description: '针对有基础考生的CLB 8+冲刺计划，每天3个核心任务',
-    coverImage: '/images/cover-2week-plan.png',
+  'writing-sprint': {
+    title: 'Writing Sprint — 崩溃瞬间反向清单',
+    description: '不讲写作，讲考场里会把分数弄丢的那 5 个瞬间。10 分钟读完 P0 拿 80% 分数杠杆。',
+    coverImage: '/images/cover-strategy-handbook.png',
   },
-  '考试策略速查手册': {
-    title: 'CELPIP 考试策略速查手册',
-    description: '考场速查风格，Writing/Reading/Listening/Speaking 各部分策略',
+  'reading-sprint': {
+    title: 'Reading Sprint — Part 3/4 推断陷阱 + 时间失守',
+    description: '不讲阅读，讲 Part 3/4 inference 陷阱 + 时间硬分配的那 5 个瞬间。',
+    coverImage: '/images/cover-strategy-handbook.png',
+  },
+  'listening-sprint': {
+    title: 'Listening Sprint — distractor + conflicting info',
+    description: '不讲听力，讲 Part 5 flip-flop + Part 4 两人观点分栏笔记的那 5 个瞬间。',
+    coverImage: '/images/cover-strategy-handbook.png',
+  },
+  'speaking-sprint': {
+    title: 'Speaking Sprint — 最小模块（精简 P1）',
+    description: '你基础已 OK。只处理 prep 浪费 + mid-sentence blank + Task 5/6/8 结构这 3 个考场特有崩溃点。',
     coverImage: '/images/cover-strategy-handbook.png',
   },
   '资源精选库': {
