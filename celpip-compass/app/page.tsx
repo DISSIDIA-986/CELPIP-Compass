@@ -86,6 +86,12 @@ export default function Home() {
                   >
                     攻略课程
                   </Link>
+                  <Link
+                    href="/infographic"
+                    className="px-3 py-2 rounded-md text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 ring-2 ring-blue-300 shadow-sm transition-colors"
+                  >
+                    🎯 应试技巧图
+                  </Link>
                 </div>
               </div>
             </div>
@@ -122,6 +128,12 @@ export default function Home() {
               className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
             >
               攻略课程
+            </Link>
+            <Link
+              href="/infographic"
+              className="px-3 py-2 text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors"
+            >
+              🎯 技巧图
             </Link>
           </div>
         </div>
